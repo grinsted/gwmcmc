@@ -31,6 +31,7 @@ function [models,logP]=gwmcmc(minit,logPfuns,mccount,varargin)
 %   'StepSize': unit-less stepsize (default=2.5).
 %   'ThinChain': Thin all the chains by only storing every N'th step (default=10)
 %   'ProgressBar': Show a text progress bar (default=true)
+%   'Parallel': Run in ensemble of walkers in parallel. (default=false)
 %
 % OUTPUTS:
 %    models: A MxWxT matrix with the thinned markov chains (with T samples
@@ -144,20 +145,19 @@ reject=zeros(Nwalkers,1);
 curm=models(:,:,1);
 curlogP=logP(:,:,1);
 progress(0,0,0)
-
-
+totcount=Nwalkers;
 for row=2:Nkeep
     for jj=1:p.ThinChain
         %generate proposals for all walkers
-        %(done outside loop, in order to be compatible with parfor - some penalty for memory):
-        %-Note it also gives a slight performance boost for non-parallel.
+        %(done outside walker loop, in order to be compatible with parfor - some penalty for memory):
+        %-Note it appears to give a slight performance boost for non-parallel.
         rix=mod((1:Nwalkers)+floor(rand*(Nwalkers-1)),Nwalkers)+1; %pick a random partner
         zz=((p.StepSize - 1)*rand(1,Nwalkers) + 1).^2/p.StepSize;
         proposedm=curm(:,rix) - bsxfun(@times,(curm(:,rix)-curm),zz);
         logrand=log(rand(NPfun+1,Nwalkers)); %moved outside because rand is slow inside parfor 
         if p.Parallel
-            %parallel/non-parallel code is currently duplicated in
-            %order to enable to experimentation with separate optimization
+            %parallel/non-parallel code is currently mirrored in
+            %order to enable experimentation with separate optimization
             %techniques for each branch. 
             
             parfor wix=1:Nwalkers
@@ -182,7 +182,7 @@ for row=2:Nkeep
                     reject(wix)=reject(wix)+1;
                 end
             end
-        else
+        else %NON-PARALLEL
             for wix=1:Nwalkers 
                 acceptfullstep=true;
                 proposedlogP=nan(NPfun,1);
@@ -203,8 +203,10 @@ for row=2:Nkeep
                     reject(wix)=reject(wix)+1;
                 end
             end
+            totcount=totcount+Nwalkers;
         end
-        progress((row-1+jj/p.ThinChain)/Nkeep,curm,sum(reject)/(((row-1)*Nkeep+jj)*Nwalkers))
+        
+        progress((row-1+jj/p.ThinChain)/Nkeep,curm,sum(reject)/totcount)
     end
     models(:,:,row)=curm;
     logP(:,:,row)=curlogP;

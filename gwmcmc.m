@@ -167,7 +167,7 @@ for row=2:Nkeep
                 proposedlogP=nan(NPfun,1);
                 if lr(1)<(numel(proposedm(:,wix))-1)*log(zz(wix))
                     for fix=1:NPfun
-                        proposedlogP(fix)=logPfuns{fix}(proposedm(:,wix));
+                        proposedlogP(fix)=logPfuns{fix}(proposedm(:,wix)); %have tested workerobjwrapper but that is slower.
                         if lr(fix+1)>proposedlogP(fix)-cp(fix)
                             acceptfullstep=false;
                             break
@@ -203,9 +203,9 @@ for row=2:Nkeep
                     reject(wix)=reject(wix)+1;
                 end
             end
-            totcount=totcount+Nwalkers;
+           
         end
-        
+        totcount=totcount+Nwalkers;        
         progress((row-1+jj/p.ThinChain)/Nkeep,curm,sum(reject)/totcount)
     end
     models(:,:,row)=curm;
@@ -235,7 +235,8 @@ end
 if (cputime-lasttime>0.1)
     
     ETA=datestr((cputime-starttime)*(1-pct)/(pct*60*60*24),13);
-    progressmsg=[uint8((1:40)<=(pct*40)).*'#' ''];
+    progressmsg=[183-uint8((1:40)<=(pct*40)).*(183-'¤') ''];
+    %progressmsg=[uint8((1:40)<=(pct*40)).*'#' ''];
     curmtxt=sprintf('% 9.3g\n',curm(1:min(end,20),1));
     %curmtxt=mat2str(curm);
     progressmsg=sprintf('GWMCMC %5.1f%% [%s] %s\n%3.0f%% rejected\n%s\n',pct*100,progressmsg,ETA,rejectpct*100,curmtxt);
@@ -247,7 +248,5 @@ end
 
 function noaction(varargin)
 
-% Acknowledgements: I became aware of the algorithm via a student report
-% which was using emcee for python. I read the paper and judged that this
-% must be excellent, and made my own implementation for matlab. It is
-% excellent.
+% Acknowledgements: I became aware of the GW algorithm via a student report
+% which was using emcee for python. Great stuff.

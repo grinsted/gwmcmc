@@ -14,6 +14,8 @@
 % <http://astrobites.org/2012/02/20/code-you-can-use-the-mcmc-hammer/>
 %
 
+addpath .. %first we add the path of the toolbox folder 
+
 %% Rosenbrock: A badly scaled example
 %
 % A classical difficult low dimensional problem is the rosenbrock density.
@@ -36,10 +38,10 @@ title('The Rosenbrock banana density.')
 % 
 
 M=2; %number of model parameters
-Nwalkers=400; %number of walkers/chains.
+Nwalkers=40; %number of walkers/chains.
 minit=randn(M,Nwalkers);
 tic
-models=gwmcmc(minit, logPfun,100000,'StepSize',30,'Parallel',true); 
+models=gwmcmc(minit, logPfun,100000,'StepSize',30); 
 toc
 
 %remove 20% burn-in from all chains.

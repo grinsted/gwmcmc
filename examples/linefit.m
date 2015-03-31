@@ -1,9 +1,8 @@
 %% Fitting a line
 %
-% This demo follows the linefit example of EMCEE for python
+% This demo follows the linefit example of EMCEE for python. 
 % See full description here: http://dan.iel.fm/emcee/current/user/line/
 % 
-% This example is provided to compare with gwmcmc and emcee implementations. 
 %
 
 addpath ..  %first we add the path of the toolbox folder 
@@ -17,6 +16,7 @@ addpath ..  %first we add the path of the toolbox folder
 % In this surrogate data there are two sources of uncertainty. One source
 % with known variance (yerr), and another multiplicative uncertainty with 
 % unknown variance. 
+
 
 % This is the true model parameters used to generate the noise 
 m_true = [-0.9594;4.294;log(0.534)]
@@ -49,7 +49,7 @@ m_lsq
 sigma_m_lsq
 
 hold on
-plot(x,polyval(m_lsq,x),'b--')
+plot(x,polyval(m_lsq,x),'b--','linewidth',3)
 
 
 %% Maximum likelihood estimate
@@ -72,7 +72,7 @@ logLike=@(m)sum(lognormpdf(y,forwardmodel(m),sqrt(variancemodel(m))));
 m_best=fminsearch(@(m)-logLike(m),[polyfit(x,y,1) 0]')
 
 hold on
-plot(x,forwardmodel(m_best),'b')
+plot(x,forwardmodel(m_best),'m','linewidth',3)
 
 legend('Data','LSQ fit','MaxLike fit')
 
@@ -92,14 +92,14 @@ logprior =@(m) log( double((m(1)>-5)&&(m(1)<0.5) && (m(2)>0)&&(m(2)<10) && (m(3)
 
 % first we initialize the ensemble of walkers in a small gaussian ball 
 % around the max-likelihood estimate. 
-minit=bsxfun(@plus,m_best,randn(3,100)*0.1);
+minit=bsxfun(@plus,m_best,randn(3,100)*0.01);
 
 % Apply the hammer:
 tic
 m=gwmcmc(minit,{logprior logLike},100000,'ThinChain',5);
 toc
 
-%todo: more diagnose plots. 
+%todo: more diagnostic plots. 
 
 % TRACE plot
 

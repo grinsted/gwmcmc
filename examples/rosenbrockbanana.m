@@ -26,11 +26,13 @@ logPfun=@(m) -(100*(m(2,:)-m(1,:).^2).^2 +(1-m(1,:)).^2)/20;
 
 %lets visualize it:
 close all
-[X,Y]=meshgrid(-4:.01:6,-1:.02:30);
+[X,Y]=meshgrid(-4:.01:6,-1:.02:34);
 Z=logPfun([X(:) Y(:)]'); Z=reshape(Z,size(X));
 contour(X,Y,exp(Z))
 colormap(parula)
-title('The Rosenbrock banana density.')
+title('The Rosenbrock banana')
+xlim([-4 6])
+ylim([-1 34])
 
 %% Apply the MCMC hammer:
 % 
@@ -56,15 +58,12 @@ models=models(:,:);
 hold on
 plot(models(1,:),models(2,:),'k.')
 
-
 legend('Rosenbrock','GWMCMC samples','location','northwest')
 
 
 
 %% References:
-% Goodman & Weare (2010), Ensemble Samplers With Affine Invariance,
-%    Comm. App. Math. Comp. Sci., Vol. 5, No. 1, 65–80
-% Foreman-Mackey, Hogg, Lang, Goodman (2013), emcee: The MCMC Hammer,
-%    arXiv:1202.3665
+% * Goodman & Weare (2010), Ensemble Samplers With Affine Invariance, Comm. App. Math. Comp. Sci., Vol. 5, No. 1, 65–80
+% * Foreman-Mackey, Hogg, Lang, Goodman (2013), emcee: The MCMC Hammer, arXiv:1202.3665
 % 
 % -Aslak Grinsted 2015

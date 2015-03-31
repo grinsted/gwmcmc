@@ -21,7 +21,7 @@ function [C,lags]=eacorr(m)
 % than the mean of each individual series.)
 %
 % example:
-%    eacorr(smooth(randn(1000,)))
+%    eacorr(filter2(ones(100,1),randn(1000,10)))
 %
 % Aslak Grinsted 2015
 
@@ -60,7 +60,6 @@ if isreal(m)
 end
 
 if nargout==0
-    figure
     plot(lags,C,'.-',lags([1 end]),[0 0],'k');
     grid on
     xlabel('lags')

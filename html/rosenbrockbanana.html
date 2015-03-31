@@ -3,19 +3,16 @@
   PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html><head>
       <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-   <!--
-This HTML was auto-generated from MATLAB code.
-To make changes, update the MATLAB code and republish this document.
-      --><title>rosenbrockbanana</title><meta name="generator" content="MATLAB 8.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2015-03-30"><meta name="DC.source" content="rosenbrockbanana.m"><style type="text/css">
+   <title>rosenbrockbanana</title><meta name="generator" content="MATLAB 8.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2015-03-31"><meta name="DC.source" content="rosenbrockbanana.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
-html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body { height:100%; margin:0px; font-family:'Roboto Slab', Rockwell, serif; font-size:10pt; color:#222; line-height:140%; background:#fff none; overflow-y:scroll; }
 html body td { vertical-align:top; text-align:left; }
 
-h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
-h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
-h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+h1 { padding:0px; margin:0px 0px 25px; font-family:Rockwell, 'Roboto Slab', serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Rockwell, 'Roboto Slab', serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Rockwell, 'Roboto Slab', serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
 
 a { color:#005fce; text-decoration:none; }
 a:hover { color:#005fce; text-decoration:underline; }
@@ -66,7 +63,7 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#1">The MCMC hammer</a></li><li><a href="#2">Rosenbrock: A badly scaled example</a></li><li><a href="#3">Apply the MCMC hammer:</a></li><li><a href="#4">References:</a></li></ul></div><h2>The MCMC hammer<a name="1"></a></h2><p>GWMCMC is an implementation of the Goodman and Weare 2010 Affine invariant ensemble Markov Chain Monte Carlo (MCMC) sampler. MCMC sampling enables bayesian inference. The problem with many traditional MCMC samplers is that they can have slow convergence for badly scaled problems, and that it is difficult to optimize the random walk for high-dimensional problems. This is where the GW-algorithm really excels as it is affine invariant. It can achieve much better convergence on badly scaled problems. It is much simpler to get to work straight out of the box, and for that reason it truly deserves to be called the MCMC hammer.</p><p>See also: <a href="http://astrobites.org/2012/02/20/code-you-can-use-the-mcmc-hammer/">http://astrobites.org/2012/02/20/code-you-can-use-the-mcmc-hammer/</a></p><pre class="codeinput">addpath <span class="string">..</span> <span class="comment">%first we add the path of the toolbox folder</span>
+  </style><link href="http://fonts.googleapis.com/css?family=Roboto+Slab&amp;subset=latin,greek-ext,greek,latin-ext" rel="stylesheet" type="text/css"></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#1">The MCMC hammer</a></li><li><a href="#2">Rosenbrock: A badly scaled example</a></li><li><a href="#3">Apply the MCMC hammer:</a></li><li><a href="#4">References:</a></li></ul></div><h2>The MCMC hammer<a name="1"></a></h2><p>GWMCMC is an implementation of the Goodman and Weare 2010 Affine invariant ensemble Markov Chain Monte Carlo (MCMC) sampler. MCMC sampling enables bayesian inference. The problem with many traditional MCMC samplers is that they can have slow convergence for badly scaled problems, and that it is difficult to optimize the random walk for high-dimensional problems. This is where the GW-algorithm really excels as it is affine invariant. It can achieve much better convergence on badly scaled problems. It is much simpler to get to work straight out of the box, and for that reason it truly deserves to be called the MCMC hammer.</p><p>See also: <a href="http://astrobites.org/2012/02/20/code-you-can-use-the-mcmc-hammer/">http://astrobites.org/2012/02/20/code-you-can-use-the-mcmc-hammer/</a></p><pre class="codeinput">addpath <span class="string">..</span> <span class="comment">%first we add the path of the toolbox folder</span>
 </pre><h2>Rosenbrock: A badly scaled example<a name="2"></a></h2><p>A classical difficult low dimensional problem is the rosenbrock density. It is defined by the following log-probability function:</p><pre class="codeinput">logPfun=@(m) -(100*(m(2,:)-m(1,:).^2).^2 +(1-m(1,:)).^2)/20;
 
 <span class="comment">%lets visualize it:</span>
@@ -98,7 +95,7 @@ plot(models(1,:),models(2,:),<span class="string">'k.'</span>)
 
 legend(<span class="string">'Rosenbrock'</span>,<span class="string">'GWMCMC samples'</span>,<span class="string">'location'</span>,<span class="string">'northwest'</span>)
 </pre><pre class="codeoutput">
-Elapsed time is 2.081477 seconds.
+Elapsed time is 2.136573 seconds.
 </pre><img vspace="5" hspace="5" src="rosenbrockbanana_02.png" alt=""> <h2>References:<a name="4"></a></h2><p>Goodman &amp; Weare (2010), Ensemble Samplers With Affine Invariance,    Comm. App. Math. Comp. Sci., Vol. 5, No. 1, 65&#8211;80 Foreman-Mackey, Hogg, Lang, Goodman (2013), emcee: The MCMC Hammer,    arXiv:1202.3665</p><p>-Aslak Grinsted 2015</p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2014b</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% The MCMC hammer

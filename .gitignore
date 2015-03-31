@@ -3,7 +3,7 @@
 repoexclude/
 demos/*.zip
 demos/*/
-
+publishexamples.m
 
 # Windows image file caches
 Thumbs.db

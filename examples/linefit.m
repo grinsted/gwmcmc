@@ -31,6 +31,7 @@ y = y + yerr .* randn(1,N);
 
 close all %close all figures 
 errorbar(x,y,yerr,'k*');
+axis tight
 
 
 

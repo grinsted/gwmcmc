@@ -103,7 +103,7 @@ p=p.Results;
 Nwalkers=size(minit,2);
 
 if size(minit,1)*2>size(minit,2)
-    warning('GWMCMC:minitdimensions','Check minit dimensions.\nIt is recommended that there be atleast twice as many walkers in the ensemble as there are model dimension. ')
+    warning('GWMCMC:minitdimensions','Check minit dimensions.\nIt is recommended that there be atleast twice as many walkers in the ensemble as there are model dimension.')
 end
 
 if p.ProgressBar
@@ -137,8 +137,7 @@ if ~all(all(isfinite(logP(:,:,1))))
     error('Starting points for all walkers must have finite logP')
 end
 
-%reject=zeros(1,NPfun+1); %keep track of how many is being rejected by each logPfun.
-%accept=zeros(1,NPfun+1);
+
 reject=zeros(Nwalkers,1);
 
 

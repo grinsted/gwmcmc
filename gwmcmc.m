@@ -92,11 +92,11 @@ end
 
 
 p=inputParser;
-p.addParamValue('StepSize',2.5,@isnumeric); %addParamValue is chose for compatibility with octave. Still Untested.
-p.addParamValue('ThinChain',10,@isnumeric);
-p.addParamValue('ProgressBar',true,@islogical);
-p.addParamValue('Parallel',false,@islogical);
-p.parse(varargin{:});
+p=p.addParamValue('StepSize',2.5,@isnumeric); %addParamValue is chose for compatibility with octave. Still Untested.
+p=p.addParamValue('ThinChain',10,@isnumeric);
+p=p.addParamValue('ProgressBar',true,@islogical);
+p=p.addParamValue('Parallel',false,@islogical);
+p=p.parse(varargin{:});
 p=p.Results;
 
 
@@ -131,7 +131,7 @@ logP=nan(NPfun,Nwalkers,Nkeep);
 for wix=1:Nwalkers
     for fix=1:NPfun
         v=logPfuns{fix}(minit(:,wix));
-        if islogical(v) %reformulate function so that false=-inf for logical constraints. 
+        if islogical(v) %reformulate function so that false=-inf for logical constraints.
             v=-1/v;logPfuns{fix}=@(m)-1/logPfuns{fix}(m); %experimental implementation of experimental feature
         end
         logP(fix,wix,1)=v;
@@ -158,13 +158,13 @@ for row=2:Nkeep
         rix=mod((1:Nwalkers)+floor(rand*(Nwalkers-1)),Nwalkers)+1; %pick a random partner
         zz=((p.StepSize - 1)*rand(1,Nwalkers) + 1).^2/p.StepSize;
         proposedm=curm(:,rix) - bsxfun(@times,(curm(:,rix)-curm),zz);
-        logrand=log(rand(NPfun+1,Nwalkers)); %moved outside because rand is slow inside parfor 
+        logrand=log(rand(NPfun+1,Nwalkers)); %moved outside because rand is slow inside parfor
         if p.Parallel
             %parallel/non-parallel code is currently mirrored in
             %order to enable experimentation with separate optimization
             %techniques for each branch. Parallel is not really great yet.
             %TODO: use SPMD instead of parfor.
-            
+
             parfor wix=1:Nwalkers
                 cp=curlogP(:,wix);
                 lr=logrand(:,wix);
@@ -188,7 +188,7 @@ for row=2:Nkeep
                 end
             end
         else %NON-PARALLEL
-            for wix=1:Nwalkers 
+            for wix=1:Nwalkers
                 acceptfullstep=true;
                 proposedlogP=nan(NPfun,1);
                 if logrand(1,wix)<(numel(proposedm(:,wix))-1)*log(zz(wix))
@@ -208,16 +208,16 @@ for row=2:Nkeep
                     reject(wix)=reject(wix)+1;
                 end
             end
-           
+
         end
-        totcount=totcount+Nwalkers;        
+        totcount=totcount+Nwalkers;
         progress((row-1+jj/p.ThinChain)/Nkeep,curm,sum(reject)/totcount)
     end
     models(:,:,row)=curm;
     logP(:,:,row)=curlogP;
-    
+
     %progress bar
-    
+
 end
 progress(1,0,0);
 
@@ -238,14 +238,14 @@ if pct==1
     return
 end
 if (cputime-lasttime>0.1)
-    
+
     ETA=datestr((cputime-starttime)*(1-pct)/(pct*60*60*24),13);
     progressmsg=[183-uint8((1:40)<=(pct*40)).*(183-'¤') ''];
     %progressmsg=[uint8((1:40)<=(pct*40)).*'#' ''];
     curmtxt=sprintf('% 9.3g\n',curm(1:min(end,20),1));
     %curmtxt=mat2str(curm);
     progressmsg=sprintf('GWMCMC %5.1f%% [%s] %s\n%3.0f%% rejected\n%s\n',pct*100,progressmsg,ETA,rejectpct*100,curmtxt);
-    
+
     fprintf('%s%s',repmat(char(8),1,lastNchar),progressmsg);
     drawnow;lasttime=cputime;
     lastNchar=length(progressmsg);

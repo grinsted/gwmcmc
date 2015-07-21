@@ -54,8 +54,8 @@ function [models,logP]=gwmcmc(minit,logPfuns,mccount,varargin)
 % Mx(W*T)-matrix while preserving the order.
 %
 %
-% EXAMPLE:
-% Here we sample a multivariate normal distribution.
+% EXAMPLE: Here we sample a multivariate normal distribution.
+%
 % %define problem:
 % mu = [5;-3;6];
 % C = [.5 -.4 0;-.4 .5 0; 0 0 1];
@@ -67,7 +67,7 @@ function [models,logP]=gwmcmc(minit,logPfuns,mccount,varargin)
 %
 % %Apply the MCMC hammer
 % [models,logP]=gwmcmc(minit,logPfuns,100000);
-% models(:,:,1:floor(end/5))=[]; %remove 20% as burn-in
+% models(:,:,1:floor(size(models,3)*.2))=[]; %remove 20% as burn-in
 % models=models(:,:)'; %reshape matrix to collapse the ensemble member dimension
 % scatter(models(:,1),models(:,2))
 % prctile(models,[5 50 95])
@@ -92,10 +92,10 @@ end
 
 
 p=inputParser;
-p.addParameter('StepSize',2.5,@isnumeric);
-p.addParameter('ThinChain',10,@isnumeric);
-p.addParameter('ProgressBar',true,@islogical);
-p.addParameter('Parallel',false,@islogical);
+p.addParamValue('StepSize',2.5,@isnumeric); %addParamValue is chose for compatibility with octave. Still Untested.
+p.addParamValue('ThinChain',10,@isnumeric);
+p.addParamValue('ProgressBar',true,@islogical);
+p.addParamValue('Parallel',false,@islogical);
 p.parse(varargin{:});
 p=p.Results;
 
@@ -130,9 +130,14 @@ NPfun=numel(logPfuns);
 logP=nan(NPfun,Nwalkers,Nkeep);
 for wix=1:Nwalkers
     for fix=1:NPfun
-        logP(fix,wix,1)=logPfuns{fix}(minit(:,wix));
+        v=logPfuns{fix}(minit(:,wix));
+        if islogical(v) %reformulate function so that false=-inf for logical constraints. 
+            v=-1/v;logPfuns{fix}=@(m)-1/logPfuns{fix}(m); %experimental implementation of experimental feature
+        end
+        logP(fix,wix,1)=v;
     end
 end
+
 if ~all(all(isfinite(logP(:,:,1))))
     error('Starting points for all walkers must have finite logP')
 end
@@ -157,7 +162,8 @@ for row=2:Nkeep
         if p.Parallel
             %parallel/non-parallel code is currently mirrored in
             %order to enable experimentation with separate optimization
-            %techniques for each branch. 
+            %techniques for each branch. Parallel is not really great yet.
+            %TODO: use SPMD instead of parfor.
             
             parfor wix=1:Nwalkers
                 cp=curlogP(:,wix);

@@ -82,6 +82,12 @@ function [models,logP]=gwmcmc(minit,logPfuns,mccount,varargin)
 % -Aslak Grinsted 2015
 
 
+persistent isoctave;  
+
+if isempty (isoctave)
+	isoctave = (exist ('OCTAVE_VERSION', 'builtin') > 0);
+end
+
 if nargin<3
     error('GWMCMC:toofewinputs','GWMCMC requires atleast 3 inputs.')
 end
@@ -92,11 +98,19 @@ end
 
 
 p=inputParser;
-p=p.addParamValue('StepSize',2.5,@isnumeric); %addParamValue is chose for compatibility with octave. Still Untested.
-p=p.addParamValue('ThinChain',10,@isnumeric);
-p=p.addParamValue('ProgressBar',true,@islogical);
-p=p.addParamValue('Parallel',false,@islogical);
-p=p.parse(varargin{:});
+if isoctave
+    p=p.addParamValue('StepSize',2.5,@isnumeric); %addParamValue is chose for compatibility with octave. Still Untested.
+    p=p.addParamValue('ThinChain',10,@isnumeric);
+    p=p.addParamValue('ProgressBar',true,@islogical);
+    p=p.addParamValue('Parallel',false,@islogical);
+    p=p.parse(varargin{:});
+else
+    p.addParameter('StepSize',2.5,@isnumeric); %addParamValue is chose for compatibility with octave. Still Untested.
+    p.addParameter('ThinChain',10,@isnumeric);
+    p.addParameter('ProgressBar',true,@islogical);
+    p.addParameter('Parallel',false,@islogical);
+    p.parse(varargin{:});
+end
 p=p.Results;
 
 

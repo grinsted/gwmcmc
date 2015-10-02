@@ -23,7 +23,7 @@ models(:,:,1:end*.2)=[];
 models=models(:,:)';
 
 
-plot(models(:,1),models(:,2),'r.');
+plot(models(:,1),models(:,2),'yo','markerfacecolor',[1 1 0]*.8);
 
 axis equal off 
 

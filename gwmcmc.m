@@ -83,8 +83,7 @@ function [models,logP]=gwmcmc(minit,logPfuns,mccount,varargin)
 
 
 persistent isoctave;  
-
-if isempty (isoctave)
+if isempty(isoctave)
 	isoctave = (exist ('OCTAVE_VERSION', 'builtin') > 0);
 end
 
@@ -99,13 +98,13 @@ end
 
 p=inputParser;
 if isoctave
-    p=p.addParamValue('StepSize',2.5,@isnumeric); %addParamValue is chose for compatibility with octave. Still Untested.
+    p=p.addParamValue('StepSize',2,@isnumeric); %addParamValue is chose for compatibility with octave. Still Untested.
     p=p.addParamValue('ThinChain',10,@isnumeric);
     p=p.addParamValue('ProgressBar',true,@islogical);
     p=p.addParamValue('Parallel',false,@islogical);
     p=p.parse(varargin{:});
 else
-    p.addParameter('StepSize',2.5,@isnumeric); %addParamValue is chose for compatibility with octave. Still Untested.
+    p.addParameter('StepSize',2,@isnumeric); %addParamValue is chose for compatibility with octave. Still Untested.
     p.addParameter('ThinChain',10,@isnumeric);
     p.addParameter('ProgressBar',true,@islogical);
     p.addParameter('Parallel',false,@islogical);
@@ -164,7 +163,7 @@ curm=models(:,:,1);
 curlogP=logP(:,:,1);
 progress(0,0,0)
 totcount=Nwalkers;
-for row=2:Nkeep
+for row=1:Nkeep
     for jj=1:p.ThinChain
         %generate proposals for all walkers
         %(done outside walker loop, in order to be compatible with parfor - some penalty for memory):
@@ -208,7 +207,8 @@ for row=2:Nkeep
                 if logrand(1,wix)<(numel(proposedm(:,wix))-1)*log(zz(wix))
                     for fix=1:NPfun
                         proposedlogP(fix)=logPfuns{fix}(proposedm(:,wix));
-                        if logrand(fix+1,wix)>proposedlogP(fix)-curlogP(fix,wix)
+                        if logrand(fix+1,wix)>proposedlogP(fix)-curlogP(fix,wix) 
+                        %if ~(logrand(fix+1,wix)<proposedlogP(fix)-curlogP(fix,wix)) %inverted expression to ensure rejection of nan and imaginary logP's.
                             acceptfullstep=false;
                             break
                         end
@@ -254,7 +254,8 @@ end
 if (cputime-lasttime>0.1)
 
     ETA=datestr((cputime-starttime)*(1-pct)/(pct*60*60*24),13);
-    progressmsg=[183-uint8((1:40)<=(pct*40)).*(183-'¤') ''];
+    progressmsg=[183-uint8((1:40)<=(pct*40)).*(183-'*') ''];
+    %progressmsg=['-'-uint8((1:40)<=(pct*40)).*('-'-'•') ''];
     %progressmsg=[uint8((1:40)<=(pct*40)).*'#' ''];
     curmtxt=sprintf('% 9.3g\n',curm(1:min(end,20),1));
     %curmtxt=mat2str(curm);

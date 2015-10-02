@@ -52,8 +52,9 @@ for mix=1:M
         r=ifft( abs(fft(d,nfft)).^2);
         c=c+r(1:T);
     end
-    C(:,mix)=c./(T-lags); %biased/unbiased 
-    C(:,mix)=C(:,mix)./C(1,mix);
+%     C(:,mix)=c./(T-lags); %biased/unbiased 
+%     C(:,mix)=C(:,mix)./C(1,mix);
+    C(:,mix)=c./c(1);
 end
 if isreal(m)
     C=real(C);

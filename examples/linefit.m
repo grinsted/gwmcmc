@@ -107,7 +107,12 @@ toc
 m(:,:,1:end*.2)=[]; %crop 20% to get rid of burn-in. 
 
 figure
-eacorr(m)
+[C,lags,ESS]=eacorr(m);
+plot(lags,C,'.-',lags([1 end]),[0 0],'k');
+grid on
+xlabel('lags')
+ylabel('autocorrelation');
+text(1,0,sprintf('ESS: %.0f',ceil(mean(ESS))),'verticalalignment','top')
 title('Markov Chain auto correlation')
 
 

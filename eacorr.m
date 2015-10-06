@@ -72,12 +72,12 @@ end
 if nargout>2
     ESS=nan(1,size(C,2));
     %we use N/(1+2*sum(ACF)) (eqn 7.11 in DBDA2)
-    %Here, I assume ACF can be approximated with exp(-k/lag)
+    %Here, I assume that the ACF can be approximated with exp(-k/lag)
     
     for ii=1:size(C,2)
-        klag=find(C(:,ii)<=0.5,1);%we determine k at the lag where C~=0.5;
-        if isempty(klag), klag=2; end %fall-back for short chains. 
-        k=-log(C(klag,ii))./(klag-1);
+        kix=find(C(:,ii)<=0.5,1);%we determine k at the lag where C~=0.5;
+        if isempty(kix), kix=2; end %use lag1 as fall-back for short chains. TODO:warn? 
+        k=-log(C(kix,ii))./lags(kix);
         sumACF=1/(exp(k)-1); %http://functions.wolfram.com/ElementaryFunctions/Exp/23/01/0001/
         ESS(ii)=N/(1+2*sumACF);
     end
@@ -88,5 +88,5 @@ if nargout==0
     grid on
     xlabel('lags')
     ylabel('autocorrelation');
-    clearvars lags C
+    clearvars lags C ESS
 end

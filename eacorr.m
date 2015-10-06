@@ -1,13 +1,21 @@
-function [C,lags]=eacorr(m)
+function [C,lags,ESS]=eacorr(m)
 %% EACORR, Ensemble auto correlation 
 % 
 % Ensemble average auto correlation. 
 % 
-% USAGE: [C,lags]=eacorr(m)
+% USAGE: [C,lags,ESS]=eacorr(m)
 %
-% eacorr is designed to be applied on the MxWxT matrices output from gwmcmc,
-% but can also be applied to 2d and 1d matrices. 
+% INPUTS: 
+%    m: eacorr is designed to be applied on the MxWxT matrices output from gwmcmc,
+%       but can also be applied to 2d and 1d matrices. 
+% 
+% OUTPUTs
+%    C: Ensemble average autocorrelation function estimated for each model
+%    dimension independently
+%    lags: lags corresponding to each row in C.
+%    ESS: Effective Sample Size estimated from the autocorrelation function of each model dimension. 
 %
+% Details:
 % When m is a 3d matrix of size MxWxT: 
 %  * the auto-correlation will be calculated along the T-dimension
 %  * the ensemble averaging will be done along the W-dimension
@@ -39,6 +47,7 @@ end
 
 
 M=size(m,1);W=size(m,2);T=size(m,3);
+N=W*T;
 
 lags=(0:T-1)';
 nfft = 2^nextpow2(2*T-1);
@@ -58,6 +67,20 @@ for mix=1:M
 end
 if isreal(m)
     C=real(C);
+end
+
+if nargout>2
+    ESS=nan(1,size(C,2));
+    %we use N/(1+2*sum(ACF)) (eqn 7.11 in DBDA2)
+    %Here, I assume ACF can be approximated with exp(-k/lag)
+    
+    for ii=1:size(C,2)
+        klag=find(C(:,ii)<=0.5,1);%we determine k at the lag where C~=0.5;
+        if isempty(klag), klag=2; end %fall-back for short chains. 
+        k=-log(C(klag,ii))./(klag-1);
+        sumACF=1/(exp(k)-1); %http://functions.wolfram.com/ElementaryFunctions/Exp/23/01/0001/
+        ESS(ii)=N/(1+2*sumACF);
+    end
 end
 
 if nargout==0

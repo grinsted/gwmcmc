@@ -2,6 +2,8 @@ function [C,lags,ESS]=eacorr(m)
 %% EACORR, Ensemble auto correlation 
 % 
 % Ensemble average auto correlation. 
+%
+% Useful if you want to estimate the ACF using multiple MCMC chains at once. 
 % 
 % USAGE: [C,lags,ESS]=eacorr(m)
 %
@@ -77,6 +79,7 @@ if nargout>2
     for ii=1:size(C,2)
         kix=find(C(:,ii)<=0.5,1);%we determine k at the lag where C~=0.5;
         if isempty(kix), kix=2; end %use lag1 as fall-back for short chains. TODO:warn? 
+        if (C(kix,ii)<0.05)&&(kix==2), ESS(ii)=N;continue;end %essentially no autocorrelation...
         k=-log(C(kix,ii))./lags(kix);
         sumACF=1/(exp(k)-1); %http://functions.wolfram.com/ElementaryFunctions/Exp/23/01/0001/
         ESS(ii)=N/(1+2*sumACF);

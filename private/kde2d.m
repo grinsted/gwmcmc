@@ -73,6 +73,8 @@ function [bandwidth,density,X,Y]=kde2d(data,n,MIN_XY,MAX_XY,EffectiveSampleSize)
 %         L_2 distance between the estimate and the true density) or you have
 %        problems running this code, please email me at botev@maths.uq.edu.au
 %
+
+% 
 %        This version has been modified by Aslak Grinsted to allow effective
 %        sample size adjustment to the bandwidth calculation.
 %

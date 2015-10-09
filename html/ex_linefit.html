@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>linefit</title><meta name="generator" content="MATLAB 8.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2015-05-04"><meta name="DC.source" content="linefit.m"><style type="text/css">
+      --><title>ex_linefit</title><meta name="generator" content="MATLAB 8.5"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2015-10-09"><meta name="DC.source" content="ex_linefit.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -85,7 +85,7 @@ axis <span class="string">tight</span>
       -0.9594
         4.294
      -0.62736
-</pre><img vspace="5" hspace="5" src="linefit_01.png" alt=""> <h2>Least squares fit<a name="3"></a></h2><p>lscov can be used to fit a straight line to the data assuming that the errors in yerr are correct. Notice how this results in very optimistic uncertainties on the slope and intercept. This is because this method only accounts for the known source of error.</p><pre class="codeinput">[m_lsq,sigma_mlsq,MSE]=lscov([x;ones(size(x))]',y',diag(yerr.^2));
+</pre><img vspace="5" hspace="5" src="ex_linefit_01.png" alt=""> <h2>Least squares fit<a name="3"></a></h2><p>lscov can be used to fit a straight line to the data assuming that the errors in yerr are correct. Notice how this results in very optimistic uncertainties on the slope and intercept. This is because this method only accounts for the known source of error.</p><pre class="codeinput">[m_lsq,sigma_mlsq,MSE]=lscov([x;ones(size(x))]',y',diag(yerr.^2));
 sigma_m_lsq=sigma_mlsq/sqrt(MSE); <span class="comment">%see help on lscov</span>
 m_lsq
 sigma_m_lsq
@@ -98,7 +98,7 @@ plot(x,polyval(m_lsq,x),<span class="string">'b--'</span>,<span class="string">'
 sigma_m_lsq =
      0.011028
      0.076933
-</pre><img vspace="5" hspace="5" src="linefit_02.png" alt=""> <h2>Maximum likelihood estimate<a name="4"></a></h2><p>We define a likelihood function consistent with how the data was generated, and then we use fminsearch to find the max-likelihood fit of the model to the data.</p><pre class="codeinput"><span class="comment">% First we define a helper function equivalent to calling log(normpdf(x,mu,sigma))</span>
+</pre><img vspace="5" hspace="5" src="ex_linefit_02.png" alt=""> <h2>Maximum likelihood estimate<a name="4"></a></h2><p>We define a likelihood function consistent with how the data was generated, and then we use fminsearch to find the max-likelihood fit of the model to the data.</p><pre class="codeinput"><span class="comment">% First we define a helper function equivalent to calling log(normpdf(x,mu,sigma))</span>
 <span class="comment">% but has higher precision because it avoids truncation errors associated with calling</span>
 <span class="comment">% log(exp(xxx)).</span>
 lognormpdf=@(x,mu,sigma)-0.5*((x-mu)./sigma).^2  -log(sqrt(2*pi).*sigma);
@@ -119,7 +119,7 @@ legend(<span class="string">'Data'</span>,<span class="string">'LSQ fit'</span>,
       -1.0551
        4.6843
      -0.70182
-</pre><img vspace="5" hspace="5" src="linefit_03.png" alt=""> <h2>prior information<a name="5"></a></h2><p>Here we formulate our prior knowledge about the model parameters. Here we use flat priors within a strict range for each of the 3 model parameters.</p><pre class="codeinput">logprior =@(m) log( double((m(1)&gt;-5)&amp;&amp;(m(1)&lt;0.5) &amp;&amp; (m(2)&gt;0)&amp;&amp;(m(2)&lt;10) &amp;&amp; (m(3)&gt;-10)&amp;&amp;(m(3)&lt;1)) );
+</pre><img vspace="5" hspace="5" src="ex_linefit_03.png" alt=""> <h2>prior information<a name="5"></a></h2><p>Here we formulate our prior knowledge about the model parameters. Here we use flat priors within a strict range for each of the 3 model parameters.</p><pre class="codeinput">logprior =@(m) log( double((m(1)&gt;-5)&amp;&amp;(m(1)&lt;0.5) &amp;&amp; (m(2)&gt;0)&amp;&amp;(m(2)&lt;10) &amp;&amp; (m(3)&gt;-10)&amp;&amp;(m(3)&lt;1)) );
 </pre><h2>Find the posterior distribution using GWMCMC<a name="6"></a></h2><p>Now we apply the MCMC hammer to draw samples from the posterior.</p><pre class="codeinput"><span class="comment">% first we initialize the ensemble of walkers in a small gaussian ball</span>
 <span class="comment">% around the max-likelihood estimate.</span>
 minit=bsxfun(@plus,m_best,randn(3,100)*0.01);
@@ -136,10 +136,18 @@ toc
 
 m(:,:,1:end*.2)=[]; <span class="comment">%crop 20% to get rid of burn-in.</span>
 
+
 figure
-eacorr(m)
+[C,lags,ESS]=eacorr(m);
+plot(lags,C,<span class="string">'.-'</span>,lags([1 end]),[0 0],<span class="string">'k'</span>);
+grid <span class="string">on</span>
+xlabel(<span class="string">'lags'</span>)
+ylabel(<span class="string">'autocorrelation'</span>);
+text(1,0,sprintf(<span class="string">'ESS: %.0f'</span>,ceil(mean(ESS))),<span class="string">'verticalalignment'</span>,<span class="string">'top'</span>)
 title(<span class="string">'Markov Chain auto correlation'</span>)
 
+figure
+ecornerplot(m,<span class="string">'ks'</span>,true)
 
 figure
 
@@ -162,8 +170,8 @@ axis <span class="string">tight</span>
 
 legend(h,<span class="string">'samples from posterior'</span>,<span class="string">'Data'</span>,<span class="string">'GWMCMC median'</span>,<span class="string">'LSQ fit'</span>,<span class="string">'Truth'</span>)
 </pre><pre class="codeoutput">
-Elapsed time is 4.964901 seconds.
-</pre><img vspace="5" hspace="5" src="linefit_04.png" alt=""> <img vspace="5" hspace="5" src="linefit_05.png" alt=""> <p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2014b</a><br></p></div><!--
+Elapsed time is 4.692691 seconds.
+</pre><img vspace="5" hspace="5" src="ex_linefit_04.png" alt=""> <img vspace="5" hspace="5" src="ex_linefit_05.png" alt=""> <img vspace="5" hspace="5" src="ex_linefit_06.png" alt=""> <p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2015a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% Fitting a line
 %
@@ -273,10 +281,18 @@ toc
 
 m(:,:,1:end*.2)=[]; %crop 20% to get rid of burn-in. 
 
+
 figure
-eacorr(m)
+[C,lags,ESS]=eacorr(m);
+plot(lags,C,'.-',lags([1 end]),[0 0],'k');
+grid on
+xlabel('lags')
+ylabel('autocorrelation');
+text(1,0,sprintf('ESS: %.0f',ceil(mean(ESS))),'verticalalignment','top')
 title('Markov Chain auto correlation')
 
+figure
+ecornerplot(m,'ks',true)
 
 figure
 

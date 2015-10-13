@@ -34,7 +34,8 @@ errorbar(x,y,yerr,'k*');
 axis tight
 ```
 
-```m_true =
+```
+m_true =
       -0.9594
         4.294
      -0.62736
@@ -59,12 +60,13 @@ hold on
 plot(x,polyval(m_lsq,x),'b--','linewidth',3)
 ```
 
-```m_lsq =
-     -0.85054
-       4.0052
+```
+m_lsq =
+      -1.0692
+       4.4279
 sigma_m_lsq =
-     0.014015
-     0.079295
+     0.011028
+     0.076933
 
 ```
     
@@ -96,10 +98,11 @@ plot(x,forwardmodel(m_best),'m','linewidth',3)
 legend('Data','LSQ fit','MaxLike fit')
 ```
 
-```m_best =
-     -0.90714
-       4.0813
-      -0.5518
+```
+m_best =
+      -1.0551
+       4.6843
+     -0.70182
 
 ```
     
@@ -174,7 +177,8 @@ legend(h,'samples from posterior','Data','GWMCMC median','LSQ fit','Truth')
 ```
 
 ```
-Elapsed time is 7.110121 seconds.
+
+Elapsed time is 5.100262 seconds.
 
 ```
     

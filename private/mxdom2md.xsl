@@ -157,7 +157,8 @@ Contents
       <xsl:value-of select="substring(.,8,string-length(.)-16)" disable-output-escaping="yes"/>
     </xsl:when>
     <xsl:otherwise>
-```<xsl:value-of select="."/>
+```
+<xsl:value-of select="."/>
 ```
     </xsl:otherwise>
   </xsl:choose>

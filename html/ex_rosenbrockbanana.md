@@ -63,7 +63,8 @@ legend('Rosenbrock','GWMCMC samples','location','northwest')
 ```
 
 ```
-Elapsed time is 3.022748 seconds.
+
+Elapsed time is 2.087418 seconds.
 
 ```
     

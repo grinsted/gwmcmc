@@ -28,7 +28,8 @@ plot(models(:,1),models(:,2),'yo','markerfacecolor',[1 1 0]*.8);
 axis equal off 
 
 
-title('GWMCMC says: "Don''t Worry, Be Happy!"')
+title('GWMCMC says: "Don''t Worry, Be Happy!"');
 
 
+%% Important links
 % Bobby McFerrin on youtube: https://www.youtube.com/watch?v=d-diB65scQU

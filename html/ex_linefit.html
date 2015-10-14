@@ -118,7 +118,7 @@ minit=bsxfun(@plus,m_maxlike,randn(3,100)*0.01);
 m=gwmcmc(minit,{logprior logLike},100000,<span class="string">'ThinChain'</span>,5);
 toc
 </pre><pre class="codeoutput">
-Elapsed time is 5.226025 seconds.
+Elapsed time is 8.454736 seconds.
 </pre><h2>Remove burn-in<a name="8"></a></h2><pre class="codeinput">m(:,:,1:end*.2)=[]; <span class="comment">%crop 20% to get rid of burn-in.</span>
 </pre><h2>Auto-correlation function<a name="9"></a></h2><pre class="codeinput">figure
 [C,lags,ESS]=eacorr(m);

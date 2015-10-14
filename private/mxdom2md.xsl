@@ -134,7 +134,7 @@ Contents
 <xsl:template match="b">**<xsl:apply-templates/>**</xsl:template>
 <xsl:template match="tt">`<xsl:apply-templates/>`</xsl:template>
 <xsl:template match="i">*<xsl:apply-templates/>*</xsl:template>
-<xsl:template match="a">`<xsl:value-of select="."/>`</xsl:template>
+<xsl:template match="a"><xsl:value-of select="."/></xsl:template>
 
 <xsl:template match="text()">
   <!-- Escape special characters in text -->

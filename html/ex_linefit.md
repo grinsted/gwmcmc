@@ -3,7 +3,7 @@
 Fitting a line
 ----------------------------------------------------------
 
-This demo follows the linefit example of EMCEE for python. See full description here: ``http://dan.iel.fm/emcee/current/user/line/``
+This demo follows the linefit example of EMCEE for python. See full description here: `http://dan.iel.fm/emcee/current/user/line/`
 
 ```matlab
 addpath ..  %first we add the path of the toolbox folder
@@ -30,7 +30,7 @@ y = y + yerr .* randn(1,N);
 
 
 close all %close all figures
-errorbar(x,y,yerr,'k*');
+errorbar(x,y,yerr,'ks','markerfacecolor',[1 1 1]*.4,'markersize',4);
 axis tight
 ```
 
@@ -57,23 +57,24 @@ m_lsq
 sigma_m_lsq
 
 hold on
-plot(x,polyval(m_lsq,x),'b--','linewidth',3)
+plot(x,polyval(m_lsq,x),'b--','linewidth',2)
+legend('Data','LSQ fit')
 ```
 
 ```
 m_lsq =
-      -1.0692
-       4.4279
+     -0.85054
+       4.0052
 sigma_m_lsq =
-     0.011028
-     0.076933
+     0.014015
+     0.079295
 
 ```
     
 ![IMAGE](ex_linefit_02.png)
 
 
-Maximum likelihood estimate
+Likelihood
 ----------------------------------------------------------
 
 We define a likelihood function consistent with how the data was generated, and then we use fminsearch to find the max-likelihood fit of the model to the data.
@@ -89,30 +90,14 @@ variancemodel=@(m) yerr.^2 + (forwardmodel(m)*exp(m(3))).^2;
 
 logLike=@(m)sum(lognormpdf(y,forwardmodel(m),sqrt(variancemodel(m))));
 
-
-m_best=fminsearch(@(m)-logLike(m),[polyfit(x,y,1) 0]')
-
-hold on
-plot(x,forwardmodel(m_best),'m','linewidth',3)
-
-legend('Data','LSQ fit','MaxLike fit')
+m_maxlike=fminsearch(@(m)-logLike(m),[polyfit(x,y,1) 0]');
 ```
 
-```
-m_best =
-      -1.0551
-       4.6843
-     -0.70182
 
-```
-    
-![IMAGE](ex_linefit_03.png)
-
-
-prior information
+Prior information
 ----------------------------------------------------------
 
-Here we formulate our prior knowledge about the model parameters. Here we use flat priors within a strict range for each of the 3 model parameters.
+Here we formulate our prior knowledge about the model parameters. Here we use flat priors within a hard limits for each of the 3 model parameters.
 
 ```matlab
 logprior =@(m) log( double((m(1)>-5)&&(m(1)<0.5) && (m(2)>0)&&(m(2)<10) && (m(3)>-10)&&(m(3)<1)) );
@@ -127,63 +112,85 @@ Now we apply the MCMC hammer to draw samples from the posterior.
 ```matlab
 % first we initialize the ensemble of walkers in a small gaussian ball
 % around the max-likelihood estimate.
-minit=bsxfun(@plus,m_best,randn(3,100)*0.01);
+minit=bsxfun(@plus,m_maxlike,randn(3,100)*0.01);
+```
 
-% Apply the hammer:
+
+Apply the hammer:
+----------------------------------------------------------
+
+Draw samples from the posterior
+
+```matlab
 tic
 m=gwmcmc(minit,{logprior logLike},100000,'ThinChain',5);
 toc
+```
 
-%todo: more diagnostic plots.
+```
 
-% TRACE plot
+Elapsed time is 7.731422 seconds.
 
+```
+    
 
+Remove burn-in
+----------------------------------------------------------
+
+```matlab
 m(:,:,1:end*.2)=[]; %crop 20% to get rid of burn-in.
+```
 
 
+Auto-correlation function
+----------------------------------------------------------
+
+```matlab
 figure
 [C,lags,ESS]=eacorr(m);
 plot(lags,C,'.-',lags([1 end]),[0 0],'k');
 grid on
 xlabel('lags')
 ylabel('autocorrelation');
-text(1,0,sprintf('ESS: %.0f',ceil(mean(ESS))),'verticalalignment','top')
-title('Markov Chain auto correlation')
+text(lags(end),0,sprintf('Effective Sample Size (ESS): %.0f_ ',ceil(mean(ESS))),'verticalalignment','bottom','horizontalalignment','right')
+title('Markov Chain Auto Correlation')
+```
 
+![IMAGE](ex_linefit_03.png)
+
+
+Corner plot of parameters
+----------------------------------------------------------
+
+```matlab
 figure
-ecornerplot(m,'ks',true)
+ecornerplot(m,'ks',true,'color',[.6 .35 .3])
+```
 
+![IMAGE](ex_linefit_04.png)
+
+
+Plot of posterior fit
+----------------------------------------------------------
+
+```matlab
 figure
-
 m=m(:,:)'; %flatten the chain
 
 %plot 100 samples...
 for kk=1:100
     r=ceil(rand*size(m,1));
-    h=plot(x,forwardmodel(m(r,:)),'color',[1 .8 1]*.9);
+    h=plot(x,forwardmodel(m(r,:)),'color',[.6 .35 .3].^.3);
     hold on
 end
-h(2)=errorbar(x,y,yerr,'k*');
-h(3)=plot(x,forwardmodel(median(m)),'m','linewidth',3);
-h(4)=plot(x,forwardmodel(m_lsq),'b--','linewidth',3);
-h(5)=plot(x,forwardmodel(m_true),'r','linewidth',3);
+h(2)=errorbar(x,y,yerr,'ks','markerfacecolor',[1 1 1]*.4,'markersize',4);
 
-
+h(4)=plot(x,forwardmodel(m_lsq),'b--','linewidth',2);
+h(3)=plot(x,forwardmodel(median(m)),'color',[.6 .35 .3],'linewidth',3);
+h(5)=plot(x,forwardmodel(m_true),'r','linewidth',2);
 
 axis tight
-
-legend(h,'samples from posterior','Data','GWMCMC median','LSQ fit','Truth')
+legend(h,'Samples from posterior','Data','GWMCMC median','LSQ fit','Truth')
 ```
-
-```
-
-Elapsed time is 5.100262 seconds.
-
-```
-    
-![IMAGE](ex_linefit_04.png)
 
 ![IMAGE](ex_linefit_05.png)
-
-![IMAGE](ex_linefit_06.png)

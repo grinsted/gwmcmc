@@ -15,7 +15,7 @@ Smiley face equation
 
 Formulate a likelihood function inspired by an equation of a smiley face.
 
-Source Michael Borcherds: https://twitter.com/mike\_geogebra/status/135391208703930369
+Source Michael Borcherds: https:\#\#twitter.com\#mike_geogebra\#status\#135391208703930369
 
 ```matlab
 logHappiness=@(m)1-exp(1e-4*((m(1)^4+2*m(1)^2*m(2)^2-0.3*m(1)^2*m(2)-40.75*m(1)^2+m(2)^4-m(2)^3-40.75*m(2)^2+25*m(2)+393.75)*((m(1)+3)^2+(m(2)-7)^2-1)*((m(1)-3)^2+(m(2)-7)^2-1)*(m(1)^2+(m(2)-2)^2-64)));
@@ -52,5 +52,5 @@ title('GWMCMC says: "Don''t Worry, Be Happy!"');
 Important links
 ----------------------------------------------------------
 
-Bobby McFerrin on youtube: https://www.youtube.com/watch?v=d-diB65scQU
+Bobby McFerrin on youtube: https:\#\#www.youtube.com\#watch?v=d-diB65scQU
 

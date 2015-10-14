@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>ex_linefit</title><meta name="generator" content="MATLAB 8.5"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2015-10-13"><meta name="DC.source" content="ex_linefit.m"><style type="text/css">
+      --><title>ex_linefit</title><meta name="generator" content="MATLAB 8.5"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2015-10-14"><meta name="DC.source" content="ex_linefit.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -66,7 +66,7 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#1">Fitting a line</a></li><li><a href="#2">Generate synthetic data</a></li><li><a href="#3">Least squares fit</a></li><li><a href="#4">Maximum likelihood estimate</a></li><li><a href="#5">prior information</a></li><li><a href="#6">Find the posterior distribution using GWMCMC</a></li></ul></div><h2>Fitting a line<a name="1"></a></h2><p>This demo follows the linefit example of EMCEE for python. See full description here: <a href="http://dan.iel.fm/emcee/current/user/line/">http://dan.iel.fm/emcee/current/user/line/</a></p><pre class="codeinput">addpath <span class="string">..</span>  <span class="comment">%first we add the path of the toolbox folder</span>
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#1">Fitting a line</a></li><li><a href="#2">Generate synthetic data</a></li><li><a href="#3">Least squares fit</a></li><li><a href="#4">Likelihood</a></li><li><a href="#5">Prior information</a></li><li><a href="#6">Find the posterior distribution using GWMCMC</a></li><li><a href="#7">Apply the hammer:</a></li><li><a href="#8">Remove burn-in</a></li><li><a href="#9">Auto-correlation function</a></li><li><a href="#10">Corner plot of parameters</a></li><li><a href="#11">Plot of posterior fit</a></li></ul></div><h2>Fitting a line<a name="1"></a></h2><p>This demo follows the linefit example of EMCEE for python. See full description here: <a href="http://dan.iel.fm/emcee/current/user/line/">http://dan.iel.fm/emcee/current/user/line/</a></p><pre class="codeinput">addpath <span class="string">..</span>  <span class="comment">%first we add the path of the toolbox folder</span>
 </pre><h2>Generate synthetic data<a name="2"></a></h2><p>First we generate some noisy data which falls on a line. We know the true parameters of the line and the parameters of the noise added to the observations.</p><p>In this surrogate data there are two sources of uncertainty. One source with known variance (yerr), and another multiplicative uncertainty with unknown variance.</p><pre class="codeinput"><span class="comment">% This is the true model parameters used to generate the noise</span>
 m_true = [-0.9594;4.294;log(0.534)]
 
@@ -79,7 +79,7 @@ y = y + yerr .* randn(1,N);
 
 
 close <span class="string">all</span> <span class="comment">%close all figures</span>
-errorbar(x,y,yerr,<span class="string">'k*'</span>);
+errorbar(x,y,yerr,<span class="string">'ks'</span>,<span class="string">'markerfacecolor'</span>,[1 1 1]*.4,<span class="string">'markersize'</span>,4);
 axis <span class="string">tight</span>
 </pre><pre class="codeoutput">m_true =
       -0.9594
@@ -91,14 +91,15 @@ m_lsq
 sigma_m_lsq
 
 hold <span class="string">on</span>
-plot(x,polyval(m_lsq,x),<span class="string">'b--'</span>,<span class="string">'linewidth'</span>,3)
+plot(x,polyval(m_lsq,x),<span class="string">'b--'</span>,<span class="string">'linewidth'</span>,2)
+legend(<span class="string">'Data'</span>,<span class="string">'LSQ fit'</span>)
 </pre><pre class="codeoutput">m_lsq =
       -1.0692
        4.4279
 sigma_m_lsq =
      0.011028
      0.076933
-</pre><img vspace="5" hspace="5" src="ex_linefit_02.png" alt=""> <h2>Maximum likelihood estimate<a name="4"></a></h2><p>We define a likelihood function consistent with how the data was generated, and then we use fminsearch to find the max-likelihood fit of the model to the data.</p><pre class="codeinput"><span class="comment">% First we define a helper function equivalent to calling log(normpdf(x,mu,sigma))</span>
+</pre><img vspace="5" hspace="5" src="ex_linefit_02.png" alt=""> <h2>Likelihood<a name="4"></a></h2><p>We define a likelihood function consistent with how the data was generated, and then we use fminsearch to find the max-likelihood fit of the model to the data.</p><pre class="codeinput"><span class="comment">% First we define a helper function equivalent to calling log(normpdf(x,mu,sigma))</span>
 <span class="comment">% but has higher precision because it avoids truncation errors associated with calling</span>
 <span class="comment">% log(exp(xxx)).</span>
 lognormpdf=@(x,mu,sigma)-0.5*((x-mu)./sigma).^2  -log(sqrt(2*pi).*sigma);
@@ -108,70 +109,45 @@ variancemodel=@(m) yerr.^2 + (forwardmodel(m)*exp(m(3))).^2;
 
 logLike=@(m)sum(lognormpdf(y,forwardmodel(m),sqrt(variancemodel(m))));
 
-
-m_best=fminsearch(@(m)-logLike(m),[polyfit(x,y,1) 0]')
-
-hold <span class="string">on</span>
-plot(x,forwardmodel(m_best),<span class="string">'m'</span>,<span class="string">'linewidth'</span>,3)
-
-legend(<span class="string">'Data'</span>,<span class="string">'LSQ fit'</span>,<span class="string">'MaxLike fit'</span>)
-</pre><pre class="codeoutput">m_best =
-      -1.0551
-       4.6843
-     -0.70182
-</pre><img vspace="5" hspace="5" src="ex_linefit_03.png" alt=""> <h2>prior information<a name="5"></a></h2><p>Here we formulate our prior knowledge about the model parameters. Here we use flat priors within a strict range for each of the 3 model parameters.</p><pre class="codeinput">logprior =@(m) log( double((m(1)&gt;-5)&amp;&amp;(m(1)&lt;0.5) &amp;&amp; (m(2)&gt;0)&amp;&amp;(m(2)&lt;10) &amp;&amp; (m(3)&gt;-10)&amp;&amp;(m(3)&lt;1)) );
+m_maxlike=fminsearch(@(m)-logLike(m),[polyfit(x,y,1) 0]');
+</pre><h2>Prior information<a name="5"></a></h2><p>Here we formulate our prior knowledge about the model parameters. Here we use flat priors within a hard limits for each of the 3 model parameters.</p><pre class="codeinput">logprior =@(m) log( double((m(1)&gt;-5)&amp;&amp;(m(1)&lt;0.5) &amp;&amp; (m(2)&gt;0)&amp;&amp;(m(2)&lt;10) &amp;&amp; (m(3)&gt;-10)&amp;&amp;(m(3)&lt;1)) );
 </pre><h2>Find the posterior distribution using GWMCMC<a name="6"></a></h2><p>Now we apply the MCMC hammer to draw samples from the posterior.</p><pre class="codeinput"><span class="comment">% first we initialize the ensemble of walkers in a small gaussian ball</span>
 <span class="comment">% around the max-likelihood estimate.</span>
-minit=bsxfun(@plus,m_best,randn(3,100)*0.01);
-
-<span class="comment">% Apply the hammer:</span>
-tic
+minit=bsxfun(@plus,m_maxlike,randn(3,100)*0.01);
+</pre><h2>Apply the hammer:<a name="7"></a></h2><p>Draw samples from the posterior</p><pre class="codeinput">tic
 m=gwmcmc(minit,{logprior logLike},100000,<span class="string">'ThinChain'</span>,5);
 toc
-
-<span class="comment">%todo: more diagnostic plots.</span>
-
-<span class="comment">% TRACE plot</span>
-
-
-m(:,:,1:end*.2)=[]; <span class="comment">%crop 20% to get rid of burn-in.</span>
-
-
-figure
+</pre><pre class="codeoutput">
+Elapsed time is 5.226025 seconds.
+</pre><h2>Remove burn-in<a name="8"></a></h2><pre class="codeinput">m(:,:,1:end*.2)=[]; <span class="comment">%crop 20% to get rid of burn-in.</span>
+</pre><h2>Auto-correlation function<a name="9"></a></h2><pre class="codeinput">figure
 [C,lags,ESS]=eacorr(m);
 plot(lags,C,<span class="string">'.-'</span>,lags([1 end]),[0 0],<span class="string">'k'</span>);
 grid <span class="string">on</span>
 xlabel(<span class="string">'lags'</span>)
 ylabel(<span class="string">'autocorrelation'</span>);
-text(1,0,sprintf(<span class="string">'ESS: %.0f'</span>,ceil(mean(ESS))),<span class="string">'verticalalignment'</span>,<span class="string">'top'</span>)
-title(<span class="string">'Markov Chain auto correlation'</span>)
-
-figure
-ecornerplot(m,<span class="string">'ks'</span>,true)
-
-figure
-
+text(lags(end),0,sprintf(<span class="string">'Effective Sample Size (ESS): %.0f_ '</span>,ceil(mean(ESS))),<span class="string">'verticalalignment'</span>,<span class="string">'bottom'</span>,<span class="string">'horizontalalignment'</span>,<span class="string">'right'</span>)
+title(<span class="string">'Markov Chain Auto Correlation'</span>)
+</pre><img vspace="5" hspace="5" src="ex_linefit_03.png" alt=""> <h2>Corner plot of parameters<a name="10"></a></h2><pre class="codeinput">figure
+ecornerplot(m,<span class="string">'ks'</span>,true,<span class="string">'color'</span>,[.6 .35 .3])
+</pre><img vspace="5" hspace="5" src="ex_linefit_04.png" alt=""> <h2>Plot of posterior fit<a name="11"></a></h2><pre class="codeinput">figure
 m=m(:,:)'; <span class="comment">%flatten the chain</span>
 
 <span class="comment">%plot 100 samples...</span>
 <span class="keyword">for</span> kk=1:100
     r=ceil(rand*size(m,1));
-    h=plot(x,forwardmodel(m(r,:)),<span class="string">'color'</span>,[1 .8 1]*.9);
+    h=plot(x,forwardmodel(m(r,:)),<span class="string">'color'</span>,[.6 .35 .3].^.3);
     hold <span class="string">on</span>
 <span class="keyword">end</span>
-h(2)=errorbar(x,y,yerr,<span class="string">'k*'</span>);
-h(3)=plot(x,forwardmodel(median(m)),<span class="string">'m'</span>,<span class="string">'linewidth'</span>,3);
-h(4)=plot(x,forwardmodel(m_lsq),<span class="string">'b--'</span>,<span class="string">'linewidth'</span>,3);
-h(5)=plot(x,forwardmodel(m_true),<span class="string">'r'</span>,<span class="string">'linewidth'</span>,3);
+h(2)=errorbar(x,y,yerr,<span class="string">'ks'</span>,<span class="string">'markerfacecolor'</span>,[1 1 1]*.4,<span class="string">'markersize'</span>,4);
 
-
+h(4)=plot(x,forwardmodel(m_lsq),<span class="string">'b--'</span>,<span class="string">'linewidth'</span>,2);
+h(3)=plot(x,forwardmodel(median(m)),<span class="string">'color'</span>,[.6 .35 .3],<span class="string">'linewidth'</span>,3);
+h(5)=plot(x,forwardmodel(m_true),<span class="string">'r'</span>,<span class="string">'linewidth'</span>,2);
 
 axis <span class="string">tight</span>
-
-legend(h,<span class="string">'samples from posterior'</span>,<span class="string">'Data'</span>,<span class="string">'GWMCMC median'</span>,<span class="string">'LSQ fit'</span>,<span class="string">'Truth'</span>)
-</pre><pre class="codeoutput">
-Elapsed time is 5.403252 seconds.
-</pre><img vspace="5" hspace="5" src="ex_linefit_04.png" alt=""> <img vspace="5" hspace="5" src="ex_linefit_05.png" alt=""> <img vspace="5" hspace="5" src="ex_linefit_06.png" alt=""> <p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2015a</a><br></p></div><!--
+legend(h,<span class="string">'Samples from posterior'</span>,<span class="string">'Data'</span>,<span class="string">'GWMCMC median'</span>,<span class="string">'LSQ fit'</span>,<span class="string">'Truth'</span>)
+</pre><img vspace="5" hspace="5" src="ex_linefit_05.png" alt=""> <p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2015a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% Fitting a line
 %
@@ -205,9 +181,8 @@ y = y + yerr .* randn(1,N);
 
 
 close all %close all figures 
-errorbar(x,y,yerr,'k*');
+errorbar(x,y,yerr,'ks','markerfacecolor',[1 1 1]*.4,'markersize',4);
 axis tight
-
 
 
 %% Least squares fit
@@ -224,10 +199,10 @@ m_lsq
 sigma_m_lsq
 
 hold on
-plot(x,polyval(m_lsq,x),'bREPLACE_WITH_DASH_DASH','linewidth',3)
+plot(x,polyval(m_lsq,x),'bREPLACE_WITH_DASH_DASH','linewidth',2)
+legend('Data','LSQ fit')
 
-
-%% Maximum likelihood estimate
+%% Likelihood
 %
 % We define a likelihood function consistent with how the data was generated, and 
 % then we use fminsearch to find the max-likelihood fit of the model to the data. 
@@ -243,18 +218,12 @@ variancemodel=@(m) yerr.^2 + (forwardmodel(m)*exp(m(3))).^2;
 
 logLike=@(m)sum(lognormpdf(y,forwardmodel(m),sqrt(variancemodel(m))));
 
+m_maxlike=fminsearch(@(m)-logLike(m),[polyfit(x,y,1) 0]');
 
-m_best=fminsearch(@(m)-logLike(m),[polyfit(x,y,1) 0]')
-
-hold on
-plot(x,forwardmodel(m_best),'m','linewidth',3)
-
-legend('Data','LSQ fit','MaxLike fit')
-
-%% prior information
+%% Prior information
 %
 % Here we formulate our prior knowledge about the model parameters. Here we use 
-% flat priors within a strict range for each of the 3 model parameters. 
+% flat priors within a hard limits for each of the 3 model parameters. 
 %
 
 logprior =@(m) log( double((m(1)>-5)&&(m(1)<0.5) && (m(2)>0)&&(m(2)<10) && (m(3)>-10)&&(m(3)<1)) );
@@ -267,19 +236,23 @@ logprior =@(m) log( double((m(1)>-5)&&(m(1)<0.5) && (m(2)>0)&&(m(2)<10) && (m(3)
 
 % first we initialize the ensemble of walkers in a small gaussian ball 
 % around the max-likelihood estimate. 
-minit=bsxfun(@plus,m_best,randn(3,100)*0.01);
+minit=bsxfun(@plus,m_maxlike,randn(3,100)*0.01);
 
-% Apply the hammer:
+%% Apply the hammer:
+%
+% Draw samples from the posterior
+%
 tic
 m=gwmcmc(minit,{logprior logLike},100000,'ThinChain',5);
 toc
 
-%todo: more diagnostic plots. 
-
-% TRACE plot
-
+%% Remove burn-in
 
 m(:,:,1:end*.2)=[]; %crop 20% to get rid of burn-in. 
+
+
+%% Auto-correlation function
+% 
 
 
 figure
@@ -288,32 +261,35 @@ plot(lags,C,'.-',lags([1 end]),[0 0],'k');
 grid on
 xlabel('lags')
 ylabel('autocorrelation');
-text(1,0,sprintf('ESS: %.0f',ceil(mean(ESS))),'verticalalignment','top')
-title('Markov Chain auto correlation')
+text(lags(end),0,sprintf('Effective Sample Size (ESS): %.0f_ ',ceil(mean(ESS))),'verticalalignment','bottom','horizontalalignment','right')
+title('Markov Chain Auto Correlation')
+
+%% Corner plot of parameters
+%
 
 figure
-ecornerplot(m,'ks',true)
+ecornerplot(m,'ks',true,'color',[.6 .35 .3])
+
+%% Plot of posterior fit
+% 
 
 figure
-
 m=m(:,:)'; %flatten the chain
 
 %plot 100 samples...
 for kk=1:100
     r=ceil(rand*size(m,1));
-    h=plot(x,forwardmodel(m(r,:)),'color',[1 .8 1]*.9);
+    h=plot(x,forwardmodel(m(r,:)),'color',[.6 .35 .3].^.3);
     hold on
 end
-h(2)=errorbar(x,y,yerr,'k*');
-h(3)=plot(x,forwardmodel(median(m)),'m','linewidth',3);
-h(4)=plot(x,forwardmodel(m_lsq),'bREPLACE_WITH_DASH_DASH','linewidth',3);
-h(5)=plot(x,forwardmodel(m_true),'r','linewidth',3);
+h(2)=errorbar(x,y,yerr,'ks','markerfacecolor',[1 1 1]*.4,'markersize',4);
 
-
+h(4)=plot(x,forwardmodel(m_lsq),'bREPLACE_WITH_DASH_DASH','linewidth',2);
+h(3)=plot(x,forwardmodel(median(m)),'color',[.6 .35 .3],'linewidth',3);
+h(5)=plot(x,forwardmodel(m_true),'r','linewidth',2);
 
 axis tight
-
-legend(h,'samples from posterior','Data','GWMCMC median','LSQ fit','Truth')
+legend(h,'Samples from posterior','Data','GWMCMC median','LSQ fit','Truth')
 
 
 ##### SOURCE END #####

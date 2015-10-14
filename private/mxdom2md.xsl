@@ -1,5 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 
+<!--
+This is an XSL stylesheet which converts mscript XML files into XSLT.
+Use the XSLT command to perform the conversion.
+
+Ned Gulley and Matthew Simoneau, September 2003
+Copyright 1984-2013 The MathWorks, Inc.
+
+Modified to provide github-markdown by Aslak Grinsted
+
+-->
 
 <!DOCTYPE xsl:stylesheet [ <!ENTITY nbsp "&#160;"> ]>
 <xsl:stylesheet
@@ -121,10 +131,10 @@ Contents
     </xsl:otherwise>
   </xsl:choose>
 </xsl:template>
-<xsl:template match="b">*<xsl:apply-templates/>*</xsl:template>
-<xsl:template match="tt">```<xsl:apply-templates/>```</xsl:template>
-<xsl:template match="i">_<xsl:apply-templates/>_</xsl:template>
-<xsl:template match="a">``<xsl:value-of select="."/>``</xsl:template>
+<xsl:template match="b">**<xsl:apply-templates/>**</xsl:template>
+<xsl:template match="tt">`<xsl:apply-templates/>`</xsl:template>
+<xsl:template match="i">*<xsl:apply-templates/>*</xsl:template>
+<xsl:template match="a">`<xsl:value-of select="."/>`</xsl:template>
 
 <xsl:template match="text()">
   <!-- Escape special characters in text -->
@@ -196,21 +206,13 @@ Contents
 
 <escape:replacements>
   <!-- special TeX characters -->
-  <replace><from>$</from><to>\$</to></replace>
-  <replace><from>&amp;</from><to>\&amp;</to></replace>
-  <replace><from>%</from><to>\%</to></replace>
-  <replace><from>#</from><to>\#</to></replace>
-  <replace><from>_</from><to>\_</to></replace>
-  <replace><from>{</from><to>\{</to></replace>
-  <replace><from>}</from><to>\}</to></replace>
-  <!-- mainly in code -->
-  <replace><from>~</from><to>\ensuremath{\tilde{\;}}</to></replace>
-  <replace><from>^</from><to>\^{}</to></replace>
-  <replace><from>\</from><to>\ensuremath{\backslash}</to></replace>
-  <!-- mainly in math -->
-  <replace><from>|</from><to>\ensuremath{|}</to></replace>
-  <replace><from>&lt;</from><to>\ensuremath{&lt;}</to></replace>
-  <replace><from>&gt;</from><to>\ensuremath{&gt;}</to></replace>
+  <replace><from>*</from><to>\*</to></replace>
+  <replace><from>#</from><to>\%</to></replace>
+  <replace><from>/</from><to>\#</to></replace>
+  <replace><from>&lt;</from><to>\&lt;</to></replace>
+  <replace><from>&gt;</from><to>\&gt;</to></replace>
+  <replace><from>[</from><to>\[</to></replace>
+  <replace><from>]</from><to>\]</to></replace>
 </escape:replacements>
 
 <xsl:variable name="replacements" select="document('')/xsl:stylesheet/escape:replacements/replace"/>

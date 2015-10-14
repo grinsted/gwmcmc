@@ -1,5 +1,6 @@
 
-##GWMCMC
+GWMCMC
+=======================
 
 GWMCMC is an implementation of the Goodman and Weare 2010 Affine
 invariant ensemble Markov Chain Monte Carlo (MCMC) sampler. MCMC sampling
@@ -26,6 +27,7 @@ Authors: [Aslak Grinsted](http://www.glaciology.net)
 ## Licensing
 
 The majority of the code is licensed under a very permissive MIT license, but some routines and example data are licensed under other terms. See licensing details in LICENSE.txt and individual files.
+
 
 
 ## Acknowledgements

@@ -5,7 +5,7 @@ The MCMC hammer
 
 GWMCMC is an implementation of the Goodman and Weare 2010 Affine invariant ensemble Markov Chain Monte Carlo (MCMC) sampler. MCMC sampling enables bayesian inference. The problem with many traditional MCMC samplers is that they can have slow convergence for badly scaled problems, and that it is difficult to optimize the random walk for high-dimensional problems. This is where the GW-algorithm really excels as it is affine invariant. It can achieve much better convergence on badly scaled problems. It is much simpler to get to work straight out of the box, and for that reason it truly deserves to be called the MCMC hammer.
 
-See also: ``http://astrobites.org/2012/02/20/code-you-can-use-the-mcmc-hammer/``
+See also: `http://astrobites.org/2012/02/20/code-you-can-use-the-mcmc-hammer/`
 
 ```matlab
 addpath .. %first we add the path of the toolbox folder
@@ -37,7 +37,7 @@ ylim([-1 34])
 Apply the MCMC hammer:
 ----------------------------------------------------------
 
-Now we apply the Goodman \& Weare MCMC sampler and plot the results on top
+Now we apply the Goodman & Weare MCMC sampler and plot the results on top
 
 ```matlab
 M=2; %number of model parameters
@@ -64,7 +64,7 @@ legend('Rosenbrock','GWMCMC samples','location','northwest')
 
 ```
 
-Elapsed time is 2.087418 seconds.
+Elapsed time is 2.175057 seconds.
 
 ```
     
@@ -74,7 +74,7 @@ Elapsed time is 2.087418 seconds.
 References:
 ----------------------------------------------------------
 
-   + Goodman \& Weare (2010), Ensemble Samplers With Affine Invariance, Comm. App. Math. Comp. Sci., Vol. 5, No. 1, 65–80
+   + Goodman & Weare (2010), Ensemble Samplers With Affine Invariance, Comm. App. Math. Comp. Sci., Vol. 5, No. 1, 65–80
    + Foreman-Mackey, Hogg, Lang, Goodman (2013), emcee: The MCMC Hammer, arXiv:1202.3665
 -Aslak Grinsted 2015
 

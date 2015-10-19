@@ -3,8 +3,6 @@
 % Sampling a smiley face likelihood function.
 % 
 
-addpath ..  %first we add the path of the toolbox folder 
-
 %% Smiley face equation
 % Formulate a likelihood function inspired by an equation of a smiley face.
 %  

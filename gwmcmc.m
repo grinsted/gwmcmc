@@ -32,6 +32,7 @@ function [models,logP]=gwmcmc(minit,logPfuns,mccount,varargin)
 %   'ThinChain': Thin all the chains by only storing every N'th step (default=10)
 %   'ProgressBar': Show a text progress bar (default=true)
 %   'Parallel': Run in ensemble of walkers in parallel. (default=false)
+%   'BurnIn': fraction of the chain that should be removed. (default=0)
 %
 % OUTPUTS:
 %    models: A MxWxT matrix with the thinned markov chains (with T samples
@@ -102,12 +103,14 @@ if isoctave
     p=p.addParamValue('ThinChain',10,@isnumeric);
     p=p.addParamValue('ProgressBar',true,@islogical);
     p=p.addParamValue('Parallel',false,@islogical);
+    p=p.addParamValue('BurnIn',0,@(x)(x>=0)&&(x<1));
     p=p.parse(varargin{:});
 else
     p.addParameter('StepSize',2,@isnumeric); %addParamValue is chose for compatibility with octave. Still Untested.
     p.addParameter('ThinChain',10,@isnumeric);
     p.addParameter('ProgressBar',true,@islogical);
     p.addParameter('Parallel',false,@islogical);
+    p.addParameter('BurnIn',0,@(x)(x>=0)&&(x<1));
     p.parse(varargin{:});
 end
 p=p.Results;
@@ -234,6 +237,11 @@ for row=1:Nkeep
 
 end
 progress(1,0,0);
+if p.BurnIn>0
+    crop=ceil(Nkeep*p.BurnIn);
+    models(:,:,1:crop)=[]; %TODO: never allocate space for them ?
+    logP(:,:,1:crop)=[];
+end
 
 
 % TODO: make standard diagnostics to give warnings...
@@ -244,7 +252,7 @@ progress(1,0,0);
 function textprogress(pct,curm,rejectpct)
 persistent lastNchar lasttime starttime
 if isempty(lastNchar)||pct==0
-    lastNchar=0;lasttime=cputime-10;starttime=cputime;fprintf('\n')
+    lasttime=cputime-10;starttime=cputime;
     pct=1e-16;
 end
 if pct==1
@@ -259,7 +267,7 @@ if (cputime-lasttime>0.1)
     %progressmsg=[uint8((1:40)<=(pct*40)).*'#' ''];
     curmtxt=sprintf('% 9.3g\n',curm(1:min(end,20),1));
     %curmtxt=mat2str(curm);
-    progressmsg=sprintf('GWMCMC %5.1f%% [%s] %s\n%3.0f%% rejected\n%s\n',pct*100,progressmsg,ETA,rejectpct*100,curmtxt);
+    progressmsg=sprintf('\nGWMCMC %5.1f%% [%s] %s\n%3.0f%% rejected\n%s\n',pct*100,progressmsg,ETA,rejectpct*100,curmtxt);
 
     fprintf('%s%s',repmat(char(8),1,lastNchar),progressmsg);
     drawnow;lasttime=cputime;

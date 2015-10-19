@@ -5,8 +5,6 @@
 % 
 %
 
-addpath ..  %first we add the path of the toolbox folder 
-
 %% Generate synthetic data
 %
 % First we generate some noisy data which falls on a line. We know the true

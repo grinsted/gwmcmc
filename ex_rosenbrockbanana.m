@@ -14,8 +14,6 @@
 % <http://astrobites.org/2012/02/20/code-you-can-use-the-mcmc-hammer/>
 %
 
-addpath .. %first we add the path of the toolbox folder 
-
 %% Rosenbrock: A badly scaled example
 %
 % A classical difficult low dimensional problem is the rosenbrock density.

@@ -1,13 +1,8 @@
-
-
 Don't worry, be Happy
-----------------------------------------------------------
+=======================================
 
 Sampling a smiley face likelihood function.
 
-```matlab
-addpath ..  %first we add the path of the toolbox folder
-```
 
 
 Smiley face equation
@@ -41,11 +36,6 @@ axis equal off
 title('GWMCMC says: "Don''t Worry, Be Happy!"');
 ```
 
-```
-
-
-```
-    
 ![IMAGE](ex_behappy_01.png)
 
 

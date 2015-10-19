@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>ex_behappy</title><meta name="generator" content="MATLAB 8.5"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2015-10-14"><meta name="DC.source" content="ex_behappy.m"><style type="text/css">
+      --><title>Don't worry, be Happy</title><meta name="generator" content="MATLAB 8.5"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2015-10-19"><meta name="DC.source" content="ex_behappy.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -66,9 +66,8 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#1">Don't worry, be Happy</a></li><li><a href="#2">Smiley face equation</a></li><li><a href="#3">Draw samples from the distribution using GWMCMC</a></li><li><a href="#4">Important links</a></li></ul></div><h2>Don't worry, be Happy<a name="1"></a></h2><p>Sampling a smiley face likelihood function.</p><pre class="codeinput">addpath <span class="string">..</span>  <span class="comment">%first we add the path of the toolbox folder</span>
-</pre><h2>Smiley face equation<a name="2"></a></h2><p>Formulate a likelihood function inspired by an equation of a smiley face.</p><p>Source Michael Borcherds: https://twitter.com/mike_geogebra/status/135391208703930369</p><pre class="codeinput">logHappiness=@(m)1-exp(1e-4*((m(1)^4+2*m(1)^2*m(2)^2-0.3*m(1)^2*m(2)-40.75*m(1)^2+m(2)^4-m(2)^3-40.75*m(2)^2+25*m(2)+393.75)*((m(1)+3)^2+(m(2)-7)^2-1)*((m(1)-3)^2+(m(2)-7)^2-1)*(m(1)^2+(m(2)-2)^2-64)));
-</pre><h2>Draw samples from the distribution using GWMCMC<a name="3"></a></h2><p>Now we apply the MCMC hammer to draw samples from the logHappiness distribution.</p><pre class="codeinput">[models,logP]=gwmcmc(randn(2,100),logHappiness,100000,<span class="string">'ThinChain'</span>,2);
+  </style></head><body><div class="content"><h1>Don't worry, be Happy</h1><!--introduction--><p>Sampling a smiley face likelihood function.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Smiley face equation</a></li><li><a href="#2">Draw samples from the distribution using GWMCMC</a></li><li><a href="#3">Important links</a></li></ul></div><h2>Smiley face equation<a name="1"></a></h2><p>Formulate a likelihood function inspired by an equation of a smiley face.</p><p>Source Michael Borcherds: https://twitter.com/mike_geogebra/status/135391208703930369</p><pre class="codeinput">logHappiness=@(m)1-exp(1e-4*((m(1)^4+2*m(1)^2*m(2)^2-0.3*m(1)^2*m(2)-40.75*m(1)^2+m(2)^4-m(2)^3-40.75*m(2)^2+25*m(2)+393.75)*((m(1)+3)^2+(m(2)-7)^2-1)*((m(1)-3)^2+(m(2)-7)^2-1)*(m(1)^2+(m(2)-2)^2-64)));
+</pre><h2>Draw samples from the distribution using GWMCMC<a name="2"></a></h2><p>Now we apply the MCMC hammer to draw samples from the logHappiness distribution.</p><pre class="codeinput">[models,logP]=gwmcmc(randn(2,100),logHappiness,100000,<span class="string">'ThinChain'</span>,2);
 models(:,:,1:end*.2)=[];
 models=models(:,:)';
 
@@ -79,15 +78,12 @@ axis <span class="string">equal</span> <span class="string">off</span>
 
 
 title(<span class="string">'GWMCMC says: "Don''t Worry, Be Happy!"'</span>);
-</pre><pre class="codeoutput">
-</pre><img vspace="5" hspace="5" src="ex_behappy_01.png" alt=""> <h2>Important links<a name="4"></a></h2><p>Bobby McFerrin on youtube: https://www.youtube.com/watch?v=d-diB65scQU</p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2015a</a><br></p></div><!--
+</pre><img vspace="5" hspace="5" src="ex_behappy_01.png" alt=""> <h2>Important links<a name="3"></a></h2><p>Bobby McFerrin on youtube: https://www.youtube.com/watch?v=d-diB65scQU</p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2015a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% Don't worry, be Happy
 %
 % Sampling a smiley face likelihood function.
 % 
-
-addpath ..  %first we add the path of the toolbox folder 
 
 %% Smiley face equation
 % Formulate a likelihood function inspired by an equation of a smiley face.

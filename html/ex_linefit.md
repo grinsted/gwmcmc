@@ -1,13 +1,8 @@
-
-
 Fitting a line
-----------------------------------------------------------
+=======================================
 
 This demo follows the linefit example of EMCEE for python. See full description here: http://dan.iel.fm/emcee/current/user/line/
 
-```matlab
-addpath ..  %first we add the path of the toolbox folder
-```
 
 
 Generate synthetic data
@@ -128,8 +123,7 @@ toc
 ```
 
 ```
-
-Elapsed time is 8.333524 seconds.
+Elapsed time is 4.864187 seconds.
 
 ```
     

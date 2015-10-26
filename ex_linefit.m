@@ -70,10 +70,11 @@ m_maxlike=fminsearch(@(m)-logLike(m),[polyfit(x,y,1) 0]');
 %% Prior information
 %
 % Here we formulate our prior knowledge about the model parameters. Here we use 
-% flat priors within a hard limits for each of the 3 model parameters. 
+% flat priors within a hard limits for each of the 3 model parameters.
+% GWMCMC allows you to specify these kinds of priors as logical expressions.
 %
 
-logprior =@(m) log( double((m(1)>-5)&&(m(1)<0.5) && (m(2)>0)&&(m(2)<10) && (m(3)>-10)&&(m(3)<1)) );
+logprior =@(m) (m(1)>-5)&&(m(1)<0.5) && (m(2)>0)&&(m(2)<10) && (m(3)>-10)&&(m(3)<1) ;
 
 %% Find the posterior distribution using GWMCMC
 %

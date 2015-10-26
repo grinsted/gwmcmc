@@ -189,7 +189,8 @@ for row=1:Nkeep
                 if lr(1)<(numel(proposedm(:,wix))-1)*log(zz(wix))
                     for fix=1:NPfun
                         proposedlogP(fix)=logPfuns{fix}(proposedm(:,wix)); %have tested workerobjwrapper but that is slower.
-                        if lr(fix+1)>proposedlogP(fix)-cp(fix)
+                        %if lr(fix+1)>proposedlogP(fix)-cp(fix)
+                        if ~(lr(fix+1)<proposedlogP(fix)-cp(fix))
                             acceptfullstep=false;
                             break
                         end
@@ -210,8 +211,8 @@ for row=1:Nkeep
                 if logrand(1,wix)<(numel(proposedm(:,wix))-1)*log(zz(wix))
                     for fix=1:NPfun
                         proposedlogP(fix)=logPfuns{fix}(proposedm(:,wix));
-                        if logrand(fix+1,wix)>proposedlogP(fix)-curlogP(fix,wix) 
-                        %if ~(logrand(fix+1,wix)<proposedlogP(fix)-curlogP(fix,wix)) %inverted expression to ensure rejection of nan and imaginary logP's.
+                        %if logrand(fix+1,wix)>proposedlogP(fix)-curlogP(fix,wix) 
+                        if ~(logrand(fix+1,wix)<proposedlogP(fix)-curlogP(fix,wix)) %inverted expression to ensure rejection of nan and imaginary logP's.
                             acceptfullstep=false;
                             break
                         end
@@ -252,7 +253,7 @@ end
 function textprogress(pct,curm,rejectpct)
 persistent lastNchar lasttime starttime
 if isempty(lastNchar)||pct==0
-    lasttime=cputime-10;starttime=cputime;
+    lasttime=cputime-10;starttime=cputime;lastNchar=0;
     pct=1e-16;
 end
 if pct==1

@@ -84,7 +84,8 @@ Now we apply the MCMC hammer to draw samples from the posterior.
 % first we initialize the ensemble of walkers in a small gaussian ball
 % around the m0 estimate.
 
-ball=randn(length(m0),30)*0.01;
+ball=randn(length(m0),30)*0.1;
+ball(:,3)=ball(:,3)*200;
 mball=bsxfun(@plus,m0,ball);
 ```
 
@@ -96,12 +97,12 @@ Draw samples from the posterior
 
 ```matlab
 tic
-m=gwmcmc(mball,{logprior logL},100000,'burnin',.2);
+m=gwmcmc(mball,{logprior logL},300000,'burnin',.3,'stepsize',2);
 toc
 ```
 
 ```
-Elapsed time is 8.109299 seconds.
+Elapsed time is 24.627998 seconds.
 
 ```
     

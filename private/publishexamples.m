@@ -20,6 +20,7 @@ set(0,'defaultaxesbox','off');
 set(0,'defaultlegendbox','off');
 set(0,'defaultaxestickdir','out','defaultAxesTickDirMode', 'manual');
 set(0,'defaultfigureinverthardcopy','off');
+set(0,'defaultfigurecolormap', hslcolormap('yr',[0 .7 .9],[.98 .2]));
 
 % reset random number generator...
 s = RandStream('mt19937ar','Seed',0);

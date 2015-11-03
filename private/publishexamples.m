@@ -27,14 +27,15 @@ RandStream.setGlobalStream(s);
 
 
 
-publishfile('..\ex_linefit','html')
-publishfile('..\ex_rosenbrockbanana','html')
-publishfile('..\ex_behappy','html')
+% publishfile('..\ex_linefit','html')
+% publishfile('..\ex_rosenbrockbanana','html')
+% publishfile('..\ex_behappy','html')
+publishfile('..\ex_breakfit','html')
 
-publishfile('..\ex_linefit','markdown')
-publishfile('..\ex_rosenbrockbanana','markdown')
-publishfile('..\ex_behappy','markdown')
-
+% publishfile('..\ex_linefit','markdown')
+% publishfile('..\ex_rosenbrockbanana','markdown')
+% publishfile('..\ex_behappy','markdown')
+publishfile('..\ex_breakfit','markdown')
 
 
 

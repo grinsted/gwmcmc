@@ -58,11 +58,11 @@ legend('Data','LSQ fit')
 
 ```
 m_lsq =
-     -0.85054
-       4.0052
+      -1.0376
+       4.0345
 sigma_m_lsq =
-     0.014015
-     0.079295
+    0.0095665
+     0.058728
 
 ```
     
@@ -92,10 +92,10 @@ m_maxlike=fminsearch(@(m)-logLike(m),[polyfit(x,y,1) 0]');
 Prior information
 ----------------------------------------------------------
 
-Here we formulate our prior knowledge about the model parameters. Here we use flat priors within a hard limits for each of the 3 model parameters.
+Here we formulate our prior knowledge about the model parameters. Here we use flat priors within a hard limits for each of the 3 model parameters. GWMCMC allows you to specify these kinds of priors as logical expressions.
 
 ```matlab
-logprior =@(m) log( double((m(1)>-5)&&(m(1)<0.5) && (m(2)>0)&&(m(2)<10) && (m(3)>-10)&&(m(3)<1)) );
+logprior =@(m) (m(1)>-5)&&(m(1)<0.5) && (m(2)>0)&&(m(2)<10) && (m(3)>-10)&&(m(3)<1) ;
 ```
 
 
@@ -118,23 +118,15 @@ Draw samples from the posterior
 
 ```matlab
 tic
-m=gwmcmc(minit,{logprior logLike},100000,'ThinChain',5);
+m=gwmcmc(minit,{logprior logLike},100000,'ThinChain',5,'burnin',.2);
 toc
 ```
 
 ```
-Elapsed time is 4.864187 seconds.
+Elapsed time is 6.766257 seconds.
 
 ```
     
-
-Remove burn-in
-----------------------------------------------------------
-
-```matlab
-m(:,:,1:end*.2)=[]; %crop 20% to get rid of burn-in.
-```
-
 
 Auto-correlation function
 ----------------------------------------------------------

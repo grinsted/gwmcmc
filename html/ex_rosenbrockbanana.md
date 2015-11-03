@@ -39,11 +39,9 @@ M=2; %number of model parameters
 Nwalkers=40; %number of walkers/chains.
 minit=randn(M,Nwalkers);
 tic
-models=gwmcmc(minit, logPfun,100000,'StepSize',30);
+models=gwmcmc(minit, logPfun,100000,'StepSize',30,'burnin',.2);
 toc
 
-%remove 20% burn-in from all chains.
-models(:,:,1:end*.2)=[];%crop 20% burn-in
 
 %flatten the chain: analyze all the chains as one
 
@@ -58,7 +56,7 @@ legend('Rosenbrock','GWMCMC samples','location','northwest')
 ```
 
 ```
-Elapsed time is 2.052536 seconds.
+Elapsed time is 2.202490 seconds.
 
 ```
     
@@ -68,7 +66,7 @@ Elapsed time is 2.052536 seconds.
 References:
 ----------------------------------------------------------
 
-   + Goodman & Weare (2010), Ensemble Samplers With Affine Invariance, Comm. App. Math. Comp. Sci., Vol. 5, No. 1, 65–80
+   + Goodman & Weare (2010), Ensemble Samplers With Affine Invariance, Comm. App. Math. Comp. Sci., Vol. 5, No. 1, 65ï¿½80
    + Foreman-Mackey, Hogg, Lang, Goodman (2013), emcee: The MCMC Hammer, arXiv:1202.3665
 -Aslak Grinsted 2015
 

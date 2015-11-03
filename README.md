@@ -22,6 +22,7 @@ Authors: [Aslak Grinsted](http://www.glaciology.net)
 + [Line fitting example](html/ex_linefit.md)
 + [Rosenbrock banana](html/ex_rosenbrockbanana.md)
 + [Be happy](html/ex_behappy.md)
++ [Fitting a trend change model](html/ex_breakfit.md)
 
 
 ## Licensing

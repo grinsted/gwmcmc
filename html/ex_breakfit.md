@@ -1,13 +1,16 @@
-%% Fitting a discontinous line 
-%
-% This code fits a trend-change model to a historical time series of sea level 
-% in Amsterdam with gaps.
-%
+Fitting a discontinous line
+=======================================
 
-%% Input data 
-%
-% Amsterdam sea level from this source: http://www.psmsl.org/data/longrecords/
+This code fits a trend-change model to a historical time series of sea level in Amsterdam with gaps.
 
+
+
+Input data
+----------------------------------------------------------
+
+Amsterdam sea level from this source: http://www.psmsl.org/data/longrecords/
+
+```matlab
 Y=[1700 -152;1701 -158;1702 -132;1703 -172;1704 -135;1705 -167;1706 -192;1707 -153;1708 -149;1709 -187;1710 -168;1711 -140;1712 -129;1713 -151;
    1714 -106;1715 -172;1716 -168;1717 -164;1718 -185;1719 -182;1720 -109;1721 -146;1722 -141;1723 -99;1724 -145;1725 -166;1726 -108;1727 -136;
    1728 -195;1729 -176;1730 -148;1731 -108;1732 -134;1733 -160;1734 -165;1735 -181;1736 -109;1737 -92;1738 -152;1739 -123;1740 -124;1741 -122;
@@ -24,68 +27,91 @@ Y=[1700 -152;1701 -158;1702 -132;1703 -172;1704 -135;1705 -167;1706 -192;1707 -1
    1906 -34;1907 -75;1908 -66;1909 -36;1910 -12;1911 -24;1912 -7;1913 -22;1914 0;1915 7;1916 -5;1917 -37;1918 -44;1919 -38;1920 14;1921 -10;1922 -16;1923 -38;1925 29];
 t=Y(:,1);
 Y=Y(:,2);
+```
 
 
-%% Define trend change model:
+Define trend change model:
+----------------------------------------------------------
 
+```matlab
 forwardmodel=@(m)(m(1)*(t<m(3))+m(2)*(t>m(3))).*(t-m(3))+m(4);
+```
 
-%% Make an initial guess for the model parameters.
+
+Make an initial guess for the model parameters.
+----------------------------------------------------------
+
+```matlab
 p=polyfit(t-mean(t),Y,1);
 m0=[p(1) p(1) mean(t) p(2)]';
 sigma=std(Y-forwardmodel(m0));
 m0=[m0 ; log(sigma)];
+```
 
 
-%% Likelihood
-%
-% We assume the data are normally distributed around the forward model.
-%
+Likelihood
+----------------------------------------------------------
 
+We assume the data are normally distributed around the forward model.
+
+```matlab
 % First we define a helper function equivalent to calling log(normpdf(x,mu,sigma))
-% but has higher precision because it avoids truncation errors associated with calling 
+% but has higher precision because it avoids truncation errors associated with calling
 % log(exp(xxx)).
 lognormpdf=@(x,mu,sigma)-0.5*((x-mu)./sigma).^2  -log(sqrt(2*pi).*sigma);
 
 
 logLike=@(m)sum(lognormpdf(y,forwardmodel(m),m(5)));
+```
 
 
-%% Prior information
-%
-% We want to restrict the model to place the kink-point within the observed
-% time interval. All other parameters have a uniform prior.
-%
+Prior information
+----------------------------------------------------------
 
+We want to restrict the model to place the kink-point within the observed time interval. All other parameters have a uniform prior.
+
+```matlab
 logprior = @(m)(m(3)>min(t))&(m(3)<max(t));
+```
 
-%% Find the posterior distribution using GWMCMC
-%
-% Now we apply the MCMC hammer to draw samples from the posterior.
-%
-%
 
-% first we initialize the ensemble of walkers in a small gaussian ball 
-% around the m0 estimate. 
+Find the posterior distribution using GWMCMC
+----------------------------------------------------------
 
-ball=randn(length(m0),30)*0.1;
-ball(:,3)=ball(:,3)*200;
+Now we apply the MCMC hammer to draw samples from the posterior.
+
+```matlab
+% first we initialize the ensemble of walkers in a small gaussian ball
+% around the m0 estimate.
+
+ball=randn(length(m0),30)*0.01;
 mball=bsxfun(@plus,m0,ball);
+```
 
-%% Apply the hammer:
-%
-% Draw samples from the posterior
-%
+
+Apply the hammer:
+----------------------------------------------------------
+
+Draw samples from the posterior
+
+```matlab
 tic
-m=gwmcmc(mball,{logprior logL},300000,'burnin',.3,'stepsize',2);
+m=gwmcmc(mball,{logprior logL},100000,'burnin',.2);
 toc
+```
 
+```
+Elapsed time is 8.109299 seconds.
 
-%% Plot the auto-correlation function
-% 
-% And determine the effective sample size.
+```
+    
 
+Plot the auto-correlation function
+----------------------------------------------------------
 
+And determine the effective sample size.
+
+```matlab
 figure
 [C,lags,ESS]=eacorr(m);
 plot(lags,C,'.-',lags([1 end]),[0 0],'k');
@@ -94,22 +120,28 @@ xlabel('lags')
 ylabel('autocorrelation');
 text(lags(end),0,sprintf('Effective Sample Size (ESS): %.0f_ ',ceil(mean(ESS))),'verticalalignment','bottom','horizontalalignment','right')
 title('Markov Chain Auto Correlation')
+```
 
-%% Corner plot of parameters
-%
-% The corner plot shows a bi-modal distribution with two different places you might place the 
-% kink in the trend-change model.
+![IMAGE](ex_breakfit_01.png)
 
+
+Corner plot of parameters
+----------------------------------------------------------
+
+The corner plot shows a bi-modal distribution with two different places you might place the kink in the trend-change model.
+
+```matlab
 figure
 ecornerplot(m,'ks',true,'color',[.6 .35 .3],'names',{'rate_1' 'rate_2' 'kink' 'intercept' '\sigma'})
+```
+
+![IMAGE](ex_breakfit_02.png)
 
 
+Plot of posterior fit
+----------------------------------------------------------
 
-
-
-%% Plot of posterior fit
-% 
-
+```matlab
 figure
 m=m(:,:)'; %flatten the chain
 
@@ -126,4 +158,6 @@ h(3)=plot(t,forwardmodel(median(m)),'color',[.6 .35 .3],'linewidth',3);
 
 axis tight
 legend(h,'Samples from posterior','Data','GWMCMC median')
+```
 
+![IMAGE](ex_breakfit_03.png)

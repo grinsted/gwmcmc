@@ -116,7 +116,6 @@ ecornerplot(m,'ks',true,'color',[.6 .35 .3],'names',{'rate_1' 'rate_2' 'kink' 'k
 figure
 m=m(:,:)'; %flatten the chain
 
-close all
 
 %make a 2d histogram of forwardmodel of the posterior samples
 ygrid=linspace(min(Y),max(Y),200);

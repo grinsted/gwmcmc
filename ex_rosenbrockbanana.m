@@ -8,9 +8,9 @@
 % This is where the GW-algorithm really excels as it is affine invariant. It
 % can achieve much better convergence on badly scaled problems. It is much
 % simpler to get to work straight out of the box, and for that reason it
-% truly deserves to be called the MCMC hammer. 
+% truly deserves to be called the MCMC hammer.
 %
-% See also: 
+% See also:
 % <http://astrobites.org/2012/02/20/code-you-can-use-the-mcmc-hammer/>
 %
 
@@ -20,7 +20,7 @@
 % It is defined by the following log-probability function:
 %
 
-logPfun=@(m) -(100*(m(2,:)-m(1,:).^2).^2 +(1-m(1,:)).^2)/20; 
+logPfun=@(m) -(100*(m(2,:)-m(1,:).^2).^2 +(1-m(1,:)).^2)/20;
 
 %lets visualize it:
 close all
@@ -33,23 +33,21 @@ xlim([-4 6])
 ylim([-1 34])
 
 %% Apply the MCMC hammer:
-% 
+%
 % Now we apply the Goodman & Weare MCMC sampler and plot the results on top
-% 
+%
 
 M=2; %number of model parameters
 Nwalkers=40; %number of walkers/chains.
 minit=randn(M,Nwalkers);
 tic
-models=gwmcmc(minit, logPfun,100000,'StepSize',30); 
+models=gwmcmc(minit, logPfun,100000,'StepSize',30,'burnin',.2);
 toc
 
-%remove 20% burn-in from all chains.
-models(:,:,1:end*.2)=[];%crop 20% burn-in
 
 %flatten the chain: analyze all the chains as one
 
-models=models(:,:); 
+models=models(:,:);
 
 %plot the results
 
@@ -61,7 +59,7 @@ legend('Rosenbrock','GWMCMC samples','location','northwest')
 
 
 %% References:
-% * Goodman & Weare (2010), Ensemble Samplers With Affine Invariance, Comm. App. Math. Comp. Sci., Vol. 5, No. 1, 65–80
+% * Goodman & Weare (2010), Ensemble Samplers With Affine Invariance, Comm. App. Math. Comp. Sci., Vol. 5, No. 1, 65ï¿½80
 % * Foreman-Mackey, Hogg, Lang, Goodman (2013), emcee: The MCMC Hammer, arXiv:1202.3665
-% 
+%
 % -Aslak Grinsted 2015

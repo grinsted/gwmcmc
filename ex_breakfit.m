@@ -103,7 +103,7 @@ title('Markov Chain Auto Correlation')
 % kink in the trend-change model. 
 
 figure
-ecornerplot(m,'ks',true,'color',[.6 .35 .3],'names',{'rate_1' 'rate_2' 'kink' 'k' '\sigma'})
+ecornerplot(m,'ks',true,'color',[.6 .35 .3],'names',{'rate_1' 'rate_2' 'kink' 'k' 'log(\sigma)'})
 
 
 

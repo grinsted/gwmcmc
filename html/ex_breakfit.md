@@ -1,4 +1,4 @@
-Fitting a discontinous line
+Fitting a trend-change model to a time series
 =======================================
 
 This code fits a trend-change model to a historical time series of sea level in Amsterdam with gaps.
@@ -103,7 +103,7 @@ toc
 ```
 
 ```
-Elapsed time is 22.910682 seconds.
+Elapsed time is 25.104546 seconds.
 
 ```
     
@@ -147,7 +147,6 @@ Plot of posterior fit
 figure
 m=m(:,:)'; %flatten the chain
 
-close all
 
 %make a 2d histogram of forwardmodel of the posterior samples
 ygrid=linspace(min(Y),max(Y),200);

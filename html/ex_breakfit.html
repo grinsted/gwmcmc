@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>Fitting a discontinous line</title><meta name="generator" content="MATLAB 8.5"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2015-11-03"><meta name="DC.source" content="ex_breakfit.m"><style type="text/css">
+      --><title>Fitting a trend-change model to a time series</title><meta name="generator" content="MATLAB 8.5"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2015-11-04"><meta name="DC.source" content="ex_breakfit.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -66,7 +66,7 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>Fitting a discontinous line</h1><!--introduction--><p>This code fits a trend-change model to a historical time series of sea level in Amsterdam with gaps.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Input data</a></li><li><a href="#2">Define trend change forward model:</a></li><li><a href="#3">Make an initial guess for the model parameters.</a></li><li><a href="#4">Likelihood</a></li><li><a href="#5">Prior information</a></li><li><a href="#6">Find the posterior distribution using GWMCMC</a></li><li><a href="#7">Apply the hammer:</a></li><li><a href="#8">Plot the auto-correlation function</a></li><li><a href="#9">Corner plot of parameters</a></li><li><a href="#10">Plot of posterior fit</a></li></ul></div><h2>Input data<a name="1"></a></h2><p>Amsterdam sea level from this source: <a href="http://www.psmsl.org/data/longrecords/">http://www.psmsl.org/data/longrecords/</a></p><pre class="codeinput">Y=[1700 -152; 1701 -158; 1702 -132; 1703 -172; 1704 -135; 1705 -167; 1706 -192; 1707 -153; 1708 -149; 1709 -187; 1710 -168; 1711 -140; 1712 -129; 1713 -151;
+  </style></head><body><div class="content"><h1>Fitting a trend-change model to a time series</h1><!--introduction--><p>This code fits a trend-change model to a historical time series of sea level in Amsterdam with gaps.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Input data</a></li><li><a href="#2">Define trend change forward model:</a></li><li><a href="#3">Make an initial guess for the model parameters.</a></li><li><a href="#4">Likelihood</a></li><li><a href="#5">Prior information</a></li><li><a href="#6">Find the posterior distribution using GWMCMC</a></li><li><a href="#7">Apply the hammer:</a></li><li><a href="#8">Plot the auto-correlation function</a></li><li><a href="#9">Corner plot of parameters</a></li><li><a href="#10">Plot of posterior fit</a></li></ul></div><h2>Input data<a name="1"></a></h2><p>Amsterdam sea level from this source: <a href="http://www.psmsl.org/data/longrecords/">http://www.psmsl.org/data/longrecords/</a></p><pre class="codeinput">Y=[1700 -152; 1701 -158; 1702 -132; 1703 -172; 1704 -135; 1705 -167; 1706 -192; 1707 -153; 1708 -149; 1709 -187; 1710 -168; 1711 -140; 1712 -129; 1713 -151;
    1714 -106; 1715 -172; 1716 -168; 1717 -164; 1718 -185; 1719 -182; 1720 -109; 1721 -146; 1722 -141; 1723 -99; 1724 -145; 1725 -166; 1726 -108; 1727 -136;
    1728 -195; 1729 -176; 1730 -148; 1731 -108; 1732 -134; 1733 -160; 1734 -165; 1735 -181; 1736 -109; 1737 -92; 1738 -152; 1739 -123; 1740 -124; 1741 -122;
    1742 -154; 1743 -144; 1744 -148; 1745 -178; 1746 -178; 1747 -142; 1748 -147; 1749 -167; 1766 -175; 1767 -111; 1768 -160; 1769 -86; 1770 -94; 1771 -87;
@@ -105,7 +105,7 @@ mball=bsxfun(@plus,m0,ball);
 </pre><h2>Apply the hammer:<a name="7"></a></h2><p>Draw samples from the posterior.</p><pre class="codeinput">tic
 m=gwmcmc(mball,{logprior logL},300000,<span class="string">'burnin'</span>,.3,<span class="string">'stepsize'</span>,2);
 toc
-</pre><pre class="codeoutput">Elapsed time is 23.136224 seconds.
+</pre><pre class="codeoutput">Elapsed time is 25.385783 seconds.
 </pre><h2>Plot the auto-correlation function<a name="8"></a></h2><p>And determine the effective sample size.</p><pre class="codeinput">figure
 [C,lags,ESS]=eacorr(m);
 plot(lags,C,<span class="string">'.-'</span>,lags([1 end]),[0 0],<span class="string">'k'</span>);
@@ -119,7 +119,6 @@ ecornerplot(m,<span class="string">'ks'</span>,true,<span class="string">'color'
 </pre><img vspace="5" hspace="5" src="ex_breakfit_02.png" alt=""> <h2>Plot of posterior fit<a name="10"></a></h2><pre class="codeinput">figure
 m=m(:,:)'; <span class="comment">%flatten the chain</span>
 
-close <span class="string">all</span>
 
 <span class="comment">%make a 2d histogram of forwardmodel of the posterior samples</span>
 ygrid=linspace(min(Y),max(Y),200);
@@ -150,7 +149,7 @@ axis <span class="string">tight</span>
 legend(h,<span class="string">'Data'</span>,<span class="string">'Model A'</span>,<span class="string">'Model B'</span>,<span class="string">'location'</span>,<span class="string">'best'</span>)
 </pre><img vspace="5" hspace="5" src="ex_breakfit_03.png" alt=""> <p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2015a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
-%% Fitting a discontinous line 
+%% Fitting a trend-change model to a time series
 %
 % This code fits a trend-change model to a historical time series of sea level 
 % in Amsterdam with gaps.
@@ -268,7 +267,6 @@ ecornerplot(m,'ks',true,'color',[.6 .35 .3],'names',{'rate_1' 'rate_2' 'kink' 'k
 figure
 m=m(:,:)'; %flatten the chain
 
-close all
 
 %make a 2d histogram of forwardmodel of the posterior samples
 ygrid=linspace(min(Y),max(Y),200);

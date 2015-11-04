@@ -1,4 +1,4 @@
-%% Fitting a discontinous line 
+%% Fitting a trend-change model to a time series
 %
 % This code fits a trend-change model to a historical time series of sea level 
 % in Amsterdam with gaps.

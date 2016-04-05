@@ -50,7 +50,7 @@ m0=[m0 ; log(sigma)];
 lognormpdf=@(x,mu,sigma)-0.5*((x-mu)./sigma).^2  -log(sqrt(2*pi).*sigma);
 
 
-logLike=@(m)sum(lognormpdf(y,forwardmodel(t,m),m(5)));
+logLike=@(m)sum(lognormpdf(Y,forwardmodel(t,m),exp(m(5))));
 
 
 %% Prior information
@@ -79,7 +79,7 @@ mball=bsxfun(@plus,m0,ball);
 % Draw samples from the posterior. 
 %
 tic
-m=gwmcmc(mball,{logprior logL},300000,'burnin',.3,'stepsize',2);
+m=gwmcmc(mball,{logprior logLike},300000,'burnin',.3,'stepsize',2);
 toc
 
 
@@ -144,4 +144,4 @@ h(3)=plot(tgrid,forwardmodel(tgrid,mm(2,:)),'color',[.6 .3 .45],'linewidth',2);
 
 axis tight
 legend(h,'Data','Model A','Model B','location','best')
-
+colormap(flipud(hot))

@@ -14,7 +14,7 @@ function [models,logP]=gwmcmc(minit,logPfuns,mccount,varargin)
 % (This code uses a cascaded variant of the Goodman and Weare algorithm).
 %
 % USAGE:
-%  [models,logP]=gwmcmc(minit,logPfuns,mccount,[Parameter,Value,Parameter,Value]);
+%  [models,logP]=gwmcmc(minit,logPfuns,mccount, Parameter,Value,Parameter,Value);
 %
 % INPUTS:
 %     minit: an MxW matrix of initial values for each of the walkers in the
@@ -99,7 +99,7 @@ end
 
 p=inputParser;
 if isoctave
-    p=p.addParamValue('StepSize',2,@isnumeric); %addParamValue is chose for compatibility with octave. Still Untested.
+    p=p.addParamValue('StepSize',2,@isnumeric); %addParamValue is chosen for compatibility with octave. Still Untested.
     p=p.addParamValue('ThinChain',10,@isnumeric);
     p=p.addParamValue('ProgressBar',true,@islogical);
     p=p.addParamValue('Parallel',false,@islogical);

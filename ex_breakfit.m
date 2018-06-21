@@ -4,6 +4,8 @@
 % in Amsterdam with gaps.
 %
 
+
+close all
 %% Input data 
 %
 % Amsterdam sea level from this source: http://www.psmsl.org/data/longrecords/
@@ -50,6 +52,8 @@ m0=[m0 ; log(sigma)];
 lognormpdf=@(x,mu,sigma)-0.5*((x-mu)./sigma).^2  -log(sqrt(2*pi).*sigma);
 
 
+
+
 logLike=@(m)sum(lognormpdf(Y,forwardmodel(t,m),exp(m(5))));
 
 
@@ -79,8 +83,11 @@ mball=bsxfun(@plus,m0,ball);
 % Draw samples from the posterior. 
 %
 tic
-m=gwmcmc(mball,{logprior logLike},300000,'burnin',.3,'stepsize',2);
+m=gwmcmc(mball,{logprior logLike},70000,'burnin',.3,'stepsize',2);
 toc
+
+% eacorr(m)
+% return
 
 
 %% Plot the auto-correlation function
@@ -124,9 +131,9 @@ Ycount=zeros(length(ygrid),length(tgrid));
 for kk=1:1000
     r=ceil(rand*size(m,1));
     Ymodel=forwardmodel(tgrid,m(r,:));
-    Ybin=round((Ymodel-ygrid(1))*length(ygrid)/(ygrid(end)-ygrid(1)));
+    Ybin=max(round((Ymodel-ygrid(1))*length(ygrid)/(ygrid(end)-ygrid(1))),1);
     for jj=1:length(tgrid)
-        Ycount(Ybin(jj),jj)	=Ycount(Ybin(jj),jj)+1;
+        Ycount(Ybin(jj),jj)	= Ycount(Ybin(jj),jj)+1;
     end
 end
 Ycount(Ycount==0)=nan;
